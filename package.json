@@ -15,6 +15,8 @@
     "morgan": "~1.5.1",
     "serve-favicon": "~2.2.0",
     "async": "~0.9.0",
-    "request": "~2.55.0"
+    "request": "~2.55.0",
+    "googleapis": "~2.0.3",
+    "gtoken": "~1.1.1"
   }
 }

@@ -1,0 +1,22 @@
+
+/*
+ * Get this json from Google APIs
+ *
+ * https://console.developers.google.com/project
+ *
+ * 1. Create a Project
+ * 2. APIs & Auth > APIs > Analytics API > Enable API
+ * 3. APIs & Auth > Credentials > OAuth > Create new Client ID > Service Account
+ * 4. Download THIS .json file
+ * 5. Paste it here and name it ga_key.json
+ */
+
+sample:
+
+{
+  "private_key_id": "111111111111111",
+  "private_key": "-----BEGIN PRIVATE KEY-----\n SOME KEY HASH \n-----END PRIVATE KEY-----\n",
+  "client_email": "some_long_email@developer.gserviceaccount.com",
+  "client_id": "some_long_id.apps.googleusercontent.com",
+  "type": "service_account"
+}

@@ -22,7 +22,10 @@ router.get('/counts', function(req, res, next) {
   }
 
   counter.get(url, function(error, counts){
-    if (error) return res.status(500).send(error);
+    if (error) {
+      console.dir(error);
+      return res.status(500).send(error);
+    }
     res.send(counts);
   });
 

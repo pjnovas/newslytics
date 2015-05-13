@@ -22,7 +22,7 @@ function fetchAndRefresh(){
   .done(function(counters) {
     createCounter(url, counters);
   })
-  .error(function(err){
+  .error(function(err,a,b){
     console.log('ERROR on fetch > ' + err);
   });
 

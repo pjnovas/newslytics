@@ -1,7 +1,7 @@
 
 /*
  * Body Parsers functions for each Network
- * output: 
+ * output:
  * {
  *   total: Number  // total count for network interaction
  *   detail: Object // network specific counts
@@ -50,7 +50,7 @@ module.exports = {
     body = body[0];
 
     return {
-      total: (body && body.result && body.result.metadata 
+      total: (body && body.result && body.result.metadata
         && body.result.metadata.globalCounts.count) || 0
     };
   },

@@ -1,19 +1,12 @@
-var util = require('util');
-
 var google = require('googleapis');
 var analytics = google.analytics('v3');
 var OAuth2 = google.auth.OAuth2;
-var GoogleToken = require('gtoken');
+var googleToken = require('gtoken');
 
-var profileId = require('../config.json').googlaAnalytics.profileID;
+var path = require('path');
+var url = require('url');
 
-// Move to config
-var config = {
-  google: {
-    jsonKey: '../ga_key.json',
-    profileId: profileId.
-  }
-};
+var config = require('../config.json').googlaAnalytics;
 
 // More info of scopes at:
 // https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtAuthorization
@@ -25,35 +18,104 @@ var scopes = [
 //'https://www.googleapis.com/auth/analytics.manage.users.readonly',
 ];
 
-var gtoken = GoogleToken({
-  keyFile: config.google.jsonKey,
+// list of metrics
+// https://developers.google.com/analytics/devguides/reporting/core/dimsmets
+// MAX 10 per request (limit by google)
+var metrics = [
+    'ga:sessions'
+  , 'ga:avgSessionDuration'
+  , 'ga:sessionDuration'
+  , 'ga:sessionsPerUser'
+
+  , 'ga:bounces'
+  , 'ga:bouncerate'
+];
+
+var gtoken = googleToken({
+  keyFile: path.dirname(__dirname) + '/ga_key.json',
   scope: scopes
 });
 
-gtoken.getToken(function(err, token) {
-  if (err) {
-    console.log("GET TOKEN ERROR: " + err);
-    return;
+var oauth2Client = new OAuth2();
+
+function getOptions(done){
+
+  gtoken.getToken(function(err, token) {
+    if (err) {
+      console.log("GET TOKEN ERROR: " + err);
+      done(err);
+      return;
+    }
+
+    oauth2Client.setCredentials({
+      access_token: token
+    });
+
+    done(null, {
+      'auth': oauth2Client,
+      'ids': 'ga:' + config.profileID,
+      'start-date': config.startDate,
+      'end-date': config.endDate,
+      'dimensions': 'ga:pagePath',
+      'metrics': metrics.join(','),
+      'sort': '-ga:pagePath',
+      //'max-results': 5
+    });
+
+  });
+}
+
+function fetch(_url, done){
+
+  getOptions(function(err, options){
+    if (err) return done(err);
+
+    if (_url){
+      console.log(url.parse(_url).path);
+      options.filters = 'ga:pagePath=~^*' + url.parse(_url).path;
+    }
+
+    // More info: https://developers.google.com/analytics/devguides/reporting/core/v3/reference
+    analytics.data.ga.get(options, done);
+  });
+}
+
+function parse(body) {
+  if (body.totalResults === 0){
+    return { total: 0 };
   }
 
-  var oauth2Client = new OAuth2();
-  oauth2Client.setCredentials({
-    access_token: token
-  });
-
-  var options = {
-    'auth': oauth2Client,
-    'ids': 'ga:' + config.google.profileId,
-    'start-date': '2015-01-01',
-    'end-date': '2015-05-01',
-    'dimensions': 'ga:pagePath',
-    'metrics': 'ga:pageviews',
-    'sort': '-ga:pagePath'
+  var result = {
+    total: +body.totalsForAllResults['ga:sessions'],
+    details: body.totalsForAllResults
   };
 
-  analytics.data.ga.get(options, function(err, data) {
-    console.log('Result: ' + (err ? err.message : 'OK'));
-    console.dir(data);
-  });
+/*
+  var header = body.columnHeaders;
+  var data = body.rows[0];
 
-});
+  header.forEach(function(col, i){
+    if (col.name === 'ga:sessions'){
+      result.total = +data[i];
+    }
+
+    var value = data[i];
+
+    switch(col.dataType.toUpperCase()){
+      case 'INTEGER': value = +value; break;
+      case 'FLOAT':
+      case 'PERCENT': value = parseFloat(value); break;
+    }
+
+    result.details[col.name.replace('ga:','')] = value;
+  });
+*/
+
+  return result;
+}
+
+module.exports = {
+  getData: fetch,
+  parse: parse
+};
+

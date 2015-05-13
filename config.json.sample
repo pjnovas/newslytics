@@ -8,10 +8,14 @@
  * 5. From the url get the Profile ID (where is XXXXXX):
  *  https://www.google.com/analytics/web/#home/a11345062w43527078pXXXXXXXX/
  * 6. Set it in your config.json
+ * 7. Set the range date to use on each query
+ *  same definition of GA: https://developers.google.com/analytics/devguides/reporting/core/v3/reference#startDate
  */
 
 {
   "googlaAnalytics": {
-    "profileID": "XXXXXX"
+    "profileID": "XXXXXX",
+    "startDate": "2012-05-01",
+    "endDate": "today"
   }
 }

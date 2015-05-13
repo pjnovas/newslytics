@@ -54,10 +54,10 @@ module.exports = {
 };
 
 /*
-TODO: 
+TODO:
 
 Reddit:http://buttons.reddit.com/button_info.json?url={{url}}
-Digg: http://widgets.digg.com/buttons/count?url={{url}} 
+Digg: http://widgets.digg.com/buttons/count?url={{url}}
 Delicious: http://feeds.delicious.com/v2/json/urlinfo/data?url={{url}}
 StumbleUpon: http://www.stumbleupon.com/services/1.01/badge.getinfo?url={{url}}
 Pinterest: http://widgets.pinterest.com/v1/urls/count.json?source=6&url={{url}}

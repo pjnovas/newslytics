@@ -72,7 +72,7 @@ function updateMax(counter){
 
   function checkCounter(c){
     for (var p in c){
-      if (c[p].total > maxValue){
+      if (p !== "googleanalytics" && c[p].total > maxValue){
         maxValue = c[p].total;
         updated = true;
       }

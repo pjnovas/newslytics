@@ -12,18 +12,18 @@
  <div id="\{{tail}}" class="metric" role="tabpanel">
 
     <ul class="nav nav-tabs" role="tablist">
-      <li role="score" class="active">
-        <a data-target="score" role="tab" data-toggle="tab">Score</a>
+      <li role="score">
+        <a data-target="score" role="tab" data-toggle="tab">Social Score</a>
       </li>
-      <li role="data">
+      <li role="data" class="active">
         <a data-target="data" role="tab" data-toggle="tab">Data</a>
       </li>
     </ul>
 
     <div class="tab-content">
-      <div role="tabpanel" class="tab-pane score active"></div>
+      <div role="tabpanel" class="tab-pane score"></div>
 
-      <div role="tabpanel" class="tab-pane data">
+      <div role="tabpanel" class="tab-pane data active">
 
         <ul class="list-group">
           \{{#each counters}}
@@ -32,7 +32,7 @@
 
             \{{#if this.details}}
             <a class="name collapser">\{{fancyName @key}}</a>
-            <ul class="list-group collapse in details">
+            <ul class="list-group collapse details">
 
               \{{#each this.details}}
               <li class="list-group-item">

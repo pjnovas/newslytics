@@ -24,10 +24,10 @@ var scopes = [
 var metrics = [
     'ga:sessions'
   , 'ga:avgSessionDuration'
-  , 'ga:sessionDuration'
-  , 'ga:sessionsPerUser'
+  //, 'ga:sessionDuration'
+  //, 'ga:sessionsPerUser'
 
-  , 'ga:bounces'
+  //, 'ga:bounces'
   , 'ga:bouncerate'
 ];
 

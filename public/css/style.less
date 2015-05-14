@@ -1,3 +1,9 @@
+@color-facebook: #3b5998;
+@color-twitter: #00aced;
+@color-linkedin: #007bb6;
+@color-googleplus: #dd4b39;
+@color-googleanalytics: #ffbf25;
+
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   padding-top: 10px;
@@ -13,6 +19,7 @@ div.metric {
   margin: 10px;
   float: left;
   position: relative;
+  max-width: 350px;
 
   a.close {
     position: absolute;
@@ -21,13 +28,68 @@ div.metric {
   }
 
   a.item {
-    position: absolute;
-    bottom: -10px;
-    left: 0;
-    width: 100%;
-    text-align: center;
+    position: inherit;
     font-size: 12px;
+    background: white;
+    margin: 5px 0;
+    display: inline-block;
+    padding: 5px;
+    border: 1px solid #ddd;
+    overflow: hidden;
   }
+}
+
+.nav-tabs {
+  position: relative;
+
+  a {
+    cursor: pointer;
+  }
+}
+
+.tab-content {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-top: none;
+  padding: 10px;
+
+  .score {
+    text-align: center;
+  }
+
+  .data {
+
+    >.list-group {
+      margin-top: 10px;
+
+      >.list-group-item {
+        font-weight: bold;
+
+        a {
+          cursor: pointer;
+        }
+
+        >.list-group {
+          margin-top: 10px;
+
+          .list-group-item:nth-child(even) {
+            background-color: #F4F4F4;
+          }
+        }
+      }
+
+      >.list-group-item:nth-child(odd) {
+        background-color: #F5F5F5;
+      }
+    }
+  }
+
+  .facebook { background-color: @color-facebook }
+  .twitter { background-color: @color-twitter }
+  .linkedin { background-color: @color-linkedin }
+  .googleplus { background-color: @color-googleplus }
+  .googleanalytics { background-color: @color-googleanalytics }
+
 }
 
 /* Graphic dashboard */
@@ -58,7 +120,7 @@ div.metric {
   display: none;
 }
 
-.aster-score { 
+.aster-score {
   line-height: 1;
   font-weight: bold;
   font-size: 200%;

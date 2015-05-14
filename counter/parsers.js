@@ -21,7 +21,7 @@ module.exports = {
 
     return {
       total: body.total_count,
-      detail: {
+      details: {
         shares: body.share_count,
         likes: body.like_count,
         comments: body.comment_count,

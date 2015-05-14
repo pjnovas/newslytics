@@ -4,8 +4,57 @@
   <div class="form-group col-xs-11">
     <input id="url" type="text" class="form-control col-xs-11" placeholder="ENTER URL here">
   </div>
-  <button id="send-url" class="btn btn-default col-xs-1">Submit</button>
+  <button id="send-url" class="btn btn-default col-xs-1" data-loading-text="Loading...">Submit</button>
+  <div id="ctn"></div>
 </div>
+
+<script id="metric-template" type="text/x-handlebars-template">
+ <div id="\{{tail}}" class="metric" role="tabpanel">
+
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="score" class="active">
+        <a data-target="score" role="tab" data-toggle="tab">Score</a>
+      </li>
+      <li role="data">
+        <a data-target="data" role="tab" data-toggle="tab">Data</a>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane score active"></div>
+
+      <div role="tabpanel" class="tab-pane data">
+
+        <ul class="list-group">
+          \{{#each counters}}
+          <li class="list-group-item item-\{{@key}}">
+            <span class="badge \{{@key}}">\{{this.total}}</span>
+
+            \{{#if this.details}}
+            <a class="name collapser">\{{fancyName @key}}</a>
+            <ul class="list-group collapse in details">
+
+              \{{#each this.details}}
+              <li class="list-group-item">
+                <span class="badge">\{{parseValue @key this}}</span>
+                \{{fancyName @key}}
+              </li>
+              \{{/each}}
+
+            </ul>
+            \{{else}}
+              <span class="name">\{{fancyName @key}}</span>
+            \{{/if}}
+
+          </li>
+          \{{/each}}
+        </ul>
+
+      </div>
+    </div>
+
+  </div>
+</script>
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
@@ -13,5 +62,6 @@
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script src="/js/textures.min.js"></script>
+<script src="/js/handlebars-v3.0.3.js"></script>
 <script src="/js/dashboard.js"></script>
 

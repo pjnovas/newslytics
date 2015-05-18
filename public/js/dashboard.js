@@ -75,7 +75,7 @@ function setScore(counters){
     }
   }
 
-  var tGA = counters.googleanalytics.total;
+  var tGA = (counters.googleanalytics && counters.googleanalytics.total) || 0;
   if (tGA > 0){
     counters.socialScore = (sum * 100) / tGA;
   }

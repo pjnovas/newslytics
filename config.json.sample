@@ -19,11 +19,14 @@
     "endDate": "today"
   },
   "auth": {
-      "user": "admin"
-    , "pass": "admin"
+    "user": "admin",
+    "pass": "admin"
   },
   "session": {
     "secret": "social secret key",
     "db": "social_counter_sessions"
+  },
+  "rss": {
+    "url": "http://example.com/url/to/feed"
   }
 }

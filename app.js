@@ -8,6 +8,7 @@ var express = require('express')
   , MongoStore = require('connect-mongo')(session)
   , passport = require('passport');
 
+global.appRoot = path.resolve(__dirname);
 var config = require('./config');
 
 var app = express();

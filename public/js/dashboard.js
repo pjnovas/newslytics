@@ -6,8 +6,19 @@ var template;
 
 $(function(){
   $('#send-url').on('click', fetchAndRefresh);
+  $('#get-rss').on('click', fetchRSS);
   template = Handlebars.compile($("#metric-template").html());
 });
+
+function blockState(){
+  $('#url').attr('disabled', true);
+  $('#send-url, #get-rss').button('loading');
+}
+
+function resetState(){
+  $('#send-url, #get-rss').button('reset');
+  $('#url').val("").attr('disabled', false);
+}
 
 function fetchAndRefresh(){
   var url = $('#url').val();
@@ -16,13 +27,7 @@ function fetchAndRefresh(){
     window.alert('enter a url!');
   }
 
-  $('#url').attr('disabled', true);
-  $('#send-url').button('loading');
-
-  function resetState(){
-    $('#send-url').button('reset');
-    $('#url').val("").attr('disabled', false);
-  }
+  blockState();
 
   $.ajax({
     url: '/counts?url=' + url,
@@ -37,6 +42,27 @@ function fetchAndRefresh(){
     resetState();
   });
 
+}
+
+function fetchRSS(){
+  blockState();
+
+  $.ajax({
+    url: '/rss_counts',
+    dataType: 'json',
+  })
+  .done(function(res) {
+
+    res.data.forEach(function(data){
+      createCounter(data.url, setScore(data.counters));
+    });
+
+    resetState();
+  })
+  .error(function(err,a,b){
+    console.log('ERROR on fetch > ' + err);
+    resetState();
+  });
 }
 
 function setScore(counters){

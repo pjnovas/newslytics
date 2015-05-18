@@ -1,11 +1,14 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
 <div class="container-fluid">
-  <div class="form-group col-xs-11">
-    <input id="url" type="text" class="form-control col-xs-11" placeholder="ENTER URL here">
+  <div class="row">
+    <div class="form-group col-xs-12 col-sm-6 col-md-8">
+      <input id="url" type="text" class="form-control col-xs-12" placeholder="ENTER URL here">
+    </div>
+    <button id="send-url" class="btn btn-default col-xs-4 col-xs-offset-1 col-sm-2 col-md-1" data-loading-text="Loading...">Submit</button>
+    <button id="get-rss" class="btn btn-default col-xs-4 col-xs-offset-2 col-sm-offset-1 col-sm-2 col-md-1" data-loading-text="Loading...">RSS FEED</button>
   </div>
-  <button id="send-url" class="btn btn-default col-xs-1" data-loading-text="Loading...">Submit</button>
-  <div id="ctn"></div>
+  <div id="ctn" class="row"></div>
 </div>
 
 <script id="metric-template" type="text/x-handlebars-template">

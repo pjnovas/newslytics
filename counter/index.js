@@ -53,6 +53,30 @@ module.exports = {
     };
 
     async.parallel(fetchers, done);
+  },
+
+  getAll: function(urls, done){
+
+    var fetchers = [];
+    var self = this;
+
+    urls.forEach(function(data){
+
+      fetchers.push( (function(_data){
+
+        return function(cb){
+          self.get(_data.url, function(err, counters){
+            _data.counters = counters;
+            cb(err, _data);
+          });
+        };
+
+      })(data) );
+
+    });
+
+    async.parallel(fetchers, done);
+
   }
 
 };

@@ -17,5 +17,9 @@
     "profileID": "XXXXXX",
     "startDate": "2012-05-01",
     "endDate": "today"
+  },
+  "auth": {
+      "user": "admin"
+    , "pass": "admin"
   }
 }

@@ -71,7 +71,7 @@ function fetch(_url, done){
     if (err) return done(err);
 
     if (_url){
-      console.log(url.parse(_url).path);
+      //console.log(url.parse(_url).path);
       options.filters = 'ga:pagePath=~^*' + url.parse(_url).path;
     }
 

@@ -17,6 +17,10 @@
     "async": "~0.9.0",
     "request": "~2.55.0",
     "googleapis": "~2.0.3",
-    "gtoken": "~1.1.1"
+    "gtoken": "~1.1.1",
+    "passport-http": "~0.2.2",
+    "passport-local": "~1.0.0",
+    "passport": "~0.2.1",
+    "express-session": "~1.11.2"
   }
 }

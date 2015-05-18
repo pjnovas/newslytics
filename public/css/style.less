@@ -3,6 +3,7 @@
 @color-linkedin: #007bb6;
 @color-googleplus: #dd4b39;
 @color-googleanalytics: #ffbf25;
+@color-socialScore: #7ED547;
 
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -19,7 +20,7 @@ div.metric {
   margin: 10px;
   float: left;
   position: relative;
-  max-width: 350px;
+  width: 350px;
 
   a.close {
     position: absolute;
@@ -35,6 +36,8 @@ div.metric {
     display: inline-block;
     padding: 5px;
     border: 1px solid #ddd;
+    height: 45px;
+    width: 100%;
     overflow: hidden;
   }
 }
@@ -89,6 +92,7 @@ div.metric {
   .linkedin { background-color: @color-linkedin }
   .googleplus { background-color: @color-googleplus }
   .googleanalytics { background-color: @color-googleanalytics }
+  .socialScore { background-color: @color-socialScore }
 
 }
 

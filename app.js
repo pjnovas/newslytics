@@ -1,9 +1,11 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var express = require('express')
+  , path = require('path')
+  , favicon = require('serve-favicon')
+  , logger = require('morgan')
+  , cookieParser = require('cookie-parser')
+  , bodyParser = require('body-parser')
+  , session = require('express-session')
+  , passport = require('passport');
 
 var routes = require('./routes/index');
 
@@ -18,9 +20,24 @@ app.set('view engine', 'hbs');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+
+app.use(cookieParser("some secret"));
+app.use(session({
+  secret: "some secret",
+  resave: true,
+  saveUninitialized: true
+}));
+
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+var config = require('./config');
+
+require('./auth')(app, config);
 
 app.use('/', routes);
 

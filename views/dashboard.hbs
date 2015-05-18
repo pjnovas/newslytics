@@ -13,7 +13,7 @@
 
     <ul class="nav nav-tabs" role="tablist">
       <li role="score">
-        <a data-target="score" role="tab" data-toggle="tab">Social Score</a>
+        <a data-target="score" role="tab" data-toggle="tab">Social Cake</a>
       </li>
       <li role="data" class="active">
         <a data-target="data" role="tab" data-toggle="tab">Data</a>
@@ -28,7 +28,7 @@
         <ul class="list-group">
           \{{#each counters}}
           <li class="list-group-item item-\{{@key}}">
-            <span class="badge \{{@key}}">\{{this.total}}</span>
+            <span class="badge \{{@key}}">\{{parseValue @key this}}</span>
 
             \{{#if this.details}}
             <a class="name collapser">\{{fancyName @key}}</a>

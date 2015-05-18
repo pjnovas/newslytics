@@ -29,7 +29,7 @@ function fetchAndRefresh(){
     dataType: 'json',
   })
   .done(function(counters) {
-    createCounter(url, counters);
+    createCounter(url, setScore(counters));
     resetState();
   })
   .error(function(err,a,b){
@@ -37,6 +37,24 @@ function fetchAndRefresh(){
     resetState();
   });
 
+}
+
+function setScore(counters){
+  var sum = 0;
+  counters.socialScore = 0;
+
+  for (var p in counters){
+    if (p !== "googleanalytics" && counters[p].total > 0){
+      sum += counters[p].total;
+    }
+  }
+
+  var tGA = counters.googleanalytics.total;
+  if (tGA > 0){
+    counters.socialScore = (sum * 100) / tGA;
+  }
+
+  return counters;
 }
 
 function createCounter(url, counters){
@@ -158,7 +176,8 @@ function sortMetrics($metricParent){
   var $list = $('.data > .list-group', $metricParent);
 
   var ntwksSort = [
-      'googleanalytics'
+      'socialScore'
+    , 'googleanalytics'
     , 'facebook'
     , 'twitter'
     , 'linkedin'
@@ -231,14 +250,13 @@ function draw(item){
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide);
 
-  var score = 0;
-  data.forEach(function(item) { return score += item.score; });
+  var sc = item.counters.socialScore;
 
   svg.append("svg:text")
     .attr("class", "aster-score")
     .attr("dy", ".35em")
     .attr("text-anchor", "middle")
-    .text(Math.round(score));
+    .text(sc ? sc.toFixed(1) + "%" : "-");
 
   var close = $('<a class="btn btn-default close">x</a>').on('click', function(){
     return (function(_item){
@@ -322,6 +340,9 @@ Handlebars.registerHelper('fancyName', function(name) {
       return 'Session Per User';
     case 'bouncerate':
       return 'Bounce Rate';
+
+    case 'socialScore':
+      return 'Social Score';
   }
 
   return name.charAt(0).toUpperCase() + name.slice(1);
@@ -329,12 +350,17 @@ Handlebars.registerHelper('fancyName', function(name) {
 
 Handlebars.registerHelper('parseValue', function(key, value) {
 
+  if (value.total >= 0){
+    value = value.total;
+  }
+
   switch(key){
     case 'ga:avgSessionDuration':
     case 'ga:sessionDuration':
     case 'ga:sessionsPerUser':
       return parseFloat(value).toFixed(1) + " s";
     case 'ga:bouncerate':
+    case 'socialScore':
       return parseFloat(value).toFixed(1) + " %";
   }
 

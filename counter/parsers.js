@@ -25,7 +25,7 @@ module.exports = {
         shares: body.share_count,
         likes: body.like_count,
         comments: body.comment_count,
-        clicks: body.click_count
+        //clicks: body.click_count
       }
     };
   },

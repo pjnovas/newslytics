@@ -21,5 +21,9 @@
   "auth": {
       "user": "admin"
     , "pass": "admin"
+  },
+  "session": {
+    "secret": "social secret key",
+    "db": "social_counter_sessions"
   }
 }

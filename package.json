@@ -21,6 +21,7 @@
     "passport-http": "~0.2.2",
     "passport-local": "~1.0.0",
     "passport": "~0.2.1",
-    "express-session": "~1.11.2"
+    "express-session": "~1.11.2",
+    "connect-mongo": "~0.8.1"
   }
 }

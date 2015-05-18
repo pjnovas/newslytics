@@ -5,9 +5,10 @@ var express = require('express')
   , cookieParser = require('cookie-parser')
   , bodyParser = require('body-parser')
   , session = require('express-session')
+  , MongoStore = require('connect-mongo')(session)
   , passport = require('passport');
 
-var routes = require('./routes/index');
+var config = require('./config');
 
 var app = express();
 
@@ -21,24 +22,24 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(cookieParser("some secret"));
+app.use(cookieParser(config.session.secret));
 app.use(session({
-  secret: "some secret",
-  resave: true,
-  saveUninitialized: true
+    secret: config.session.secret
+  , store: new MongoStore({ db: config.session.db })
+  , cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 /* 7 days */ }
+  , resave: true
+  , saveUninitialized: true
 }));
 
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 app.use(passport.initialize());
 app.use(passport.session());
 
-var config = require('./config');
-
 require('./auth')(app, config);
 
+var routes = require('./routes/index');
 app.use('/', routes);
 
 // catch 404 and forward to error handler

@@ -25,6 +25,9 @@
     "connect-mongo": "~0.8.1",
     "feed-read": "0.0.1",
     "jsonfile": "~2.0.0",
-    "moment": "~2.10.3"
+    "moment": "~2.10.3",
+    "mongoose": "~4.0.3",
+    "lodash": "~3.9.1",
+    "xmlreader": "~0.2.3"
   }
 }

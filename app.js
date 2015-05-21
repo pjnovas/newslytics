@@ -1,4 +1,5 @@
 var express = require('express')
+  , mongoose = require('mongoose')
   , path = require('path')
   , favicon = require('serve-favicon')
   , logger = require('morgan')
@@ -10,6 +11,8 @@ var express = require('express')
 
 global.appRoot = path.resolve(__dirname);
 var config = require('./config');
+
+mongoose.connect(config.db.url || ('mongodb://' + config.db.host + '/'+ config.db.name));
 
 var app = express();
 
@@ -38,9 +41,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 app.use(passport.session());
 
+require('./models')();
 require('./auth')(app, config);
 
-var routes = require('./routes/index');
+var routes = require('./routes');
 app.use('/', routes);
 
 // catch 404 and forward to error handler

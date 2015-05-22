@@ -1,0 +1,51 @@
+
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+
+  >
+<channel>
+  <title>Comentarios en: Happiness!</title>
+  <atom:link href="http://test.com/2013/12/happiness/feed" rel="self" type="application/rss+xml" />
+  <link>http://test.com/2013/12/happiness/</link>
+  <description>some description</description>
+  <lastBuildDate>Tue, 16 Dec 2014 15:46:00 +0000</lastBuildDate>
+    <sy:updatePeriod>hourly</sy:updatePeriod>
+    <sy:updateFrequency>1</sy:updateFrequency>
+  <generator>http://wordpress.org/?v=4.0.1</generator>
+
+  <item>
+    <title>Por: Carlos</title>
+    <link>http://test.com/2013/12/happiness/#comment-1472</link>
+    <dc:creator><![CDATA[Carlos]]></dc:creator>
+    <pubDate>Mon, 17 Nov 2014 01:52:24 +0000</pubDate>
+    <guid isPermaLink="false">http://test.com/?p=3891#comment-1472</guid>
+    <description><![CDATA[HAppy Happy!]]></description>
+    <content:encoded><![CDATA[<p>HAppy Happy!</p>
+]]></content:encoded>
+  </item>
+  <item>
+    <title>Por: Jesse</title>
+    <link>http://test.com/2013/12/happiness/#comment-1441</link>
+    <dc:creator><![CDATA[Jesse]]></dc:creator>
+    <pubDate>Tue, 11 Nov 2014 21:23:46 +0000</pubDate>
+    <guid isPermaLink="false">http://test.com/?p=3891#comment-1441</guid>
+    <description><![CDATA[Cool!]]></description>
+    <content:encoded><![CDATA[<p>Cool!</p>
+]]></content:encoded>
+  </item>
+  <item>
+    <title>Por: Juan</title>
+    <link>http://test.com/2013/12/happiness/#comment-1286</link>
+    <dc:creator><![CDATA[Juan]]></dc:creator>
+    <pubDate>Thu, 26 Dec 2013 18:17:00 +0000</pubDate>
+    <guid isPermaLink="false">http://test.com/?p=3891#comment-1286</guid>
+    <description><![CDATA[Genial!]]></description>
+    <content:encoded><![CDATA[<p>Genial!</p>
+]]></content:encoded>
+  </item>
+</channel>
+</rss>
+

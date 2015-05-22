@@ -27,6 +27,7 @@
     "db": "social_counter_sessions"
   },
   "rss": {
-    "url": "http://example.com/url/to/feed"
+    "origin": "http://example.com/",
+    "append": "?feed=rss2"
   }
 }

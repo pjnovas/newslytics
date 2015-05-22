@@ -1,0 +1,55 @@
+
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+  xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+  >
+
+<channel>
+  <title>testdomain &#187; 2013 &#187; 08</title>
+  <atom:link href="http://testdomain.com/feed/?year=2013&#038;month=3&#038;day=8" rel="self" type="application/rss+xml" />
+  <link>http://testdomain.com</link>
+  <description>some description</description>
+  <lastBuildDate>Tue, 02 Dec 2014 14:22:59 +0000</lastBuildDate>
+  <language>es-ES</language>
+  <sy:updatePeriod>hourly</sy:updatePeriod>
+  <sy:updateFrequency>1</sy:updateFrequency>
+  <generator>http://wordpress.org/?v=4.2.2</generator>
+  <item>
+    <title>HAPPY POST TITLE</title>
+    <link>http://testdomain.com/2013/03/happy-post/</link>
+    <comments>http://testdomain.com/2013/03/happy-post/#comments</comments>
+    <pubDate>Fri, 08 Mar 2013 14:02:58 +0000</pubDate>
+    <dc:creator><![CDATA[an awesome author]]></dc:creator>
+        <category><![CDATA[Category1]]></category>
+    <category><![CDATA[Category2]]></category>
+
+    <guid isPermaLink="false">http://testdomain.com/?p=3578</guid>
+    <description><![CDATA[ TEXT TEXT TEXT ... <br /><a class="more-link" href="http://testdomain.com/2013/03/happy-post/">keep reading</a>]]></description>
+        <content:encoded><![CDATA[<p>TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT</p>
+]]></content:encoded>
+      <wfw:commentRss>http://testdomain.com/2013/03/happy-post/feed/</wfw:commentRss>
+    <slash:comments>6</slash:comments>
+    </item>
+  <item>
+    <title>HAPPY POST TITLE 2</title>
+    <link>http://testdomain.com/2013/03/happy-post2/</link>
+    <comments>http://testdomain.com/2013/03/happy-post2/#comments</comments>
+    <pubDate>Fri, 08 Mar 2013 14:02:58 +0000</pubDate>
+    <dc:creator><![CDATA[an awesome author]]></dc:creator>
+        <category><![CDATA[Category1]]></category>
+    <category><![CDATA[Category2]]></category>
+
+    <guid isPermaLink="false">http://testdomain.com/?p=3579</guid>
+    <description><![CDATA[ TEXT TEXT TEXT ... <br /><a class="more-link" href="http://testdomain.com/2013/03/happy-post2/">keep reading</a>]]></description>
+        <content:encoded><![CDATA[<p>TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT</p>
+]]></content:encoded>
+      <wfw:commentRss>http://testdomain.com/2013/03/happy-post2/feed/</wfw:commentRss>
+    <slash:comments>4</slash:comments>
+    </item>
+  </channel>
+</rss>
+

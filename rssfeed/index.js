@@ -27,6 +27,7 @@ module.exports = {
         tail += '&' + p + '=' + query[p];
       }
     }
+
     fetch(origin + append + tail, done);
   }
 
@@ -52,8 +53,9 @@ function fetch(url, cb) {
 
   req.on('error', done);
   req.on('response', function(res) {
-    if (res.statusCode != 200)
+    if (res.statusCode != 200) {
       return this.emit('error', new Error('Bad status code ' + res.statusCode));
+    }
 
     res.pipe(feedparser);
   });

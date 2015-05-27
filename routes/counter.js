@@ -4,6 +4,9 @@ var debug = require('debug')('social-counter:router');
 var jf = require('jsonfile')
   , countersPath = global.appRoot + '/rssfeed/counters.json'
   , moment = require("moment")
+
+  , express = require('express')
+  , nURL = require('url')
   , _ = require("lodash")
   , mongoose = require('mongoose');
 
@@ -12,12 +15,100 @@ var Article = mongoose.model('Article');
 var counter = require('../counter');
 var rssFeed = require('../rssfeed');
 
-module.exports = function(router) {
+module.exports = function(config) {
+  rssFeed.configure(config.rss);
+
+  var router = express.Router();
+
+  if (process.env.NODE_ENV != "test"){
+    router.use(isAuth);
+  }
+
   //router.get('/counts', isAuth, getByUrl);
   //router.get('/rss_counts', isAuth, getCache, checkAndUpdate, sendCounters);
 
-  router.get('/counts', isAuth, setUrls, setArticles, fetchNewArticles);
+  router.get('/articles', fetchArticles, sendArticles);
+  router.get('/articles/*', setArticleUrl, fetchArticles, sendArticle);
+
+  return router;
 };
+
+function isAuth(req, res, next){
+  if (!req.isAuthenticated()){
+    return res.status(401).send("User not authenticated");
+  }
+
+  next();
+}
+
+function setArticleUrl(req, res, next){
+  var url = req.url.replace('/articles/', '');
+  var purl = nURL.parse(url);
+
+  if (!purl.host || !purl.protocol){
+    return res.status(400).send('invalid url > ' + url);
+  }
+
+  req.articleUrl = url;
+  next();
+}
+
+function fetchArticles(req, res, next){
+
+  function throwError(err){
+    if (err) {
+      console.log(err, err.stack);
+      res.status(500).send(err);
+      return true;
+    }
+  }
+
+  if (req.articleUrl){
+    // One article by url
+
+    rssFeed.get(req.articleUrl, function(err, article){
+      if (throwError(err)) return;
+      req.article = article;
+      next();
+    });
+
+    return;
+  }
+
+  var search = req.query;
+
+  if (!search || _.isEmpty(search)){
+    // No search query > get last 10 RSS feed
+
+    rssFeed.getFeed(function(err, result){
+      if (throwError(err)) return;
+      req.articles = result.items;
+      next();
+    });
+
+    return;
+  }
+
+  // Get by a search
+  rssFeed.search(search, function(err, result){
+    if (throwError(err)) return;
+    req.articles = result.items;
+    next();
+  });
+}
+
+
+function sendArticles(req, res){
+  res.send(req.articles || []);
+}
+
+function sendArticle(req, res){
+  res.send(req.article);
+}
+
+
+/************************************************************************/
+
 
 /* GET Counts by url */
 function getByUrl(req, res, next) {
@@ -194,13 +285,3 @@ function checkAndUpdate(req, res, next){
 function sendCounters(req, res){
   res.send(res.counters);
 }
-
-function isAuth(req, res, next){
-
-  if (!req.isAuthenticated()){
-    return res.send(401, "User not authenticated");
-  }
-
-  next();
-}
-

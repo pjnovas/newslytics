@@ -87,4 +87,8 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+
+  // only to run tests
+  // do a console log to make grunt-express-server know when this server started
+  console.log('Express server listening on port ' + server.address().port);
 }

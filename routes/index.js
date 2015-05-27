@@ -1,20 +1,26 @@
+
 var express = require('express');
-var router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Social Counter' });
-});
+module.exports = function(config){
+  var router = express.Router();
 
-router.get('/login', login);
-router.get('/logout', logout);
+  /* GET home page. */
+  router.get('/', function(req, res, next) {
+    res.render('index', { title: 'Social Counter' });
+  });
 
-/* GET dashboard page. */
-router.get('/dashboard', checkAuth, function(req, res, next) {
-  res.render('dashboard', { title: 'Social Counter - Dashboard' });
-});
+  router.get('/login', login);
+  router.get('/logout', logout);
 
-require('./counter')(router);
+  /* GET dashboard page. */
+  router.get('/dashboard', checkAuth, function(req, res, next) {
+    res.render('dashboard', { title: 'Social Counter - Dashboard' });
+  });
+
+  router.use('/api', require('./counter')(config));
+
+  return router;
+};
 
 function checkAuth(req, res, next){
   if (!req.isAuthenticated()){
@@ -36,5 +42,3 @@ function logout(req, res) {
   req.logout();
   res.redirect('/');
 }
-
-module.exports = router;

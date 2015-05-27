@@ -1,5 +1,6 @@
 config.json
 ga_key.json
+config.test.json
 
 # Logs
 logs

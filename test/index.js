@@ -1,2 +1,3 @@
 
 require('./rssfeed');
+require('./router');

@@ -10,7 +10,11 @@ var express = require('express')
   , passport = require('passport');
 
 global.appRoot = path.resolve(__dirname);
+
 var config = require('./config');
+if (process.env.NODE_ENV == "test"){
+  config = require('./config.test');
+}
 
 mongoose.connect(config.db.url || ('mongodb://' + config.db.host + '/'+ config.db.name));
 
@@ -44,7 +48,7 @@ app.use(passport.session());
 require('./models')();
 require('./auth')(app, config);
 
-var routes = require('./routes');
+var routes = require('./routes')(config);
 app.use('/', routes);
 
 // catch 404 and forward to error handler

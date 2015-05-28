@@ -30,7 +30,7 @@ router.get('/', function(req, res){
   sendFile(basePath + '/search_feed.xml', res);
 });
 
-router.get('/some_url', function(req, res){
+router.get('/2013/12/happiness/', function(req, res){
 
   if (!req.query.hasOwnProperty('feed')){
     res.status(500).send('EXPECTED feed=rss2 parameter');

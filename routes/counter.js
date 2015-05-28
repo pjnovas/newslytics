@@ -27,8 +27,8 @@ module.exports = function(config) {
   //router.get('/counts', isAuth, getByUrl);
   //router.get('/rss_counts', isAuth, getCache, checkAndUpdate, sendCounters);
 
-  router.get('/articles', fetchArticles, sendArticles);
-  router.get('/articles/*', setArticleUrl, fetchArticles, sendArticle);
+  router.get('/articles', fetchArticles, mapArticles, sendArticles);
+  router.get('/articles/*', setArticleUrl, fetchArticles, mapArticles, sendArticle);
 
   return router;
 };
@@ -97,6 +97,38 @@ function fetchArticles(req, res, next){
   });
 }
 
+function mapArticles(req, res, next){
+
+  if (req.article){
+    var lnk = req.article.meta.link;
+
+    req.article = {
+        url: lnk
+      , tail: (lnk && nURL.parse(lnk).pathname) || ''
+      , title: req.article.meta.title || ""
+      , comments: req.article.items.length
+    };
+
+    return next();
+  }
+
+  function map(obj){
+    return {
+        url: obj.link
+      , tail: (obj.link && nURL.parse(obj.link).pathname) || ''
+      , title: obj.title || ""
+      , published_at: obj.pubDate
+      , comments: +((obj['slash:comments'] && obj['slash:comments']['#']) || 0)
+      , text: ""
+    };
+  }
+
+  if (req.articles && req.articles.length){
+    req.articles = req.articles.map(map);
+  }
+
+  next();
+}
 
 function sendArticles(req, res){
   res.send(req.articles || []);

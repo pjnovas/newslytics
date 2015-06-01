@@ -4,6 +4,7 @@ var debug = require('debug')('social-counter:router');
 var jf = require('jsonfile')
   , countersPath = global.appRoot + '/rssfeed/counters.json'
   , moment = require("moment")
+  , async = require("async")
 
   , express = require('express')
   , nURL = require('url')
@@ -27,8 +28,8 @@ module.exports = function(config) {
   //router.get('/counts', isAuth, getByUrl);
   //router.get('/rss_counts', isAuth, getCache, checkAndUpdate, sendCounters);
 
-  router.get('/articles', fetchArticles, mapArticles, sendArticles);
-  router.get('/articles/*', setArticleUrl, fetchArticles, mapArticles, sendArticle);
+  router.get('/articles', fetchArticles, mapArticles, storeArticles, sendArticles);
+  router.get('/articles/*', setArticleUrl, fetchArticles, mapArticles, storeArticles, sendArticle);
 
   return router;
 };
@@ -107,6 +108,7 @@ function mapArticles(req, res, next){
       , tail: (lnk && nURL.parse(lnk).pathname) || ''
       , title: req.article.meta.title || ""
       , comments: req.article.items.length
+      , fetched_at: new Date()
     };
 
     return next();
@@ -120,11 +122,86 @@ function mapArticles(req, res, next){
       , published_at: obj.pubDate
       , comments: +((obj['slash:comments'] && obj['slash:comments']['#']) || 0)
       , text: ""
+      , fetched_at: new Date()
     };
   }
 
   if (req.articles && req.articles.length){
     req.articles = req.articles.map(map);
+  }
+
+  next();
+}
+
+function storeArticles(req, res, next){
+
+  function onError(err){
+    if (err) {
+      console.log(err, err.stack);
+      return true;
+    }
+  }
+
+  function storeOne(_article, done){
+    // Updates cache for one article (creates one if no exist)
+
+    Article.findOne({ url: _article.url }, function(err, article){
+      if (onError(err)) return done();
+
+      if (!article){
+        // article not cached, create one
+
+        var article = new Article(_article);
+
+        article.save(function(err, article){
+          if (onError(err)) return done();
+          done(article);
+        });
+
+        return;
+      }
+
+      // article cached > update it
+      article.comments = _article.comments;
+      article.fetched_at = _article.fetched_at || new Date();
+
+      article.save(function(err, article){
+        if (onError(err)) return done();
+        done(article);
+      });
+
+    });
+  }
+
+  if (req.article){
+    // only one article fetch
+    return storeOne(req.article, function(article){
+      req.article = article || req.article;
+      next();
+    });
+  }
+
+  if (req.articles && req.articles.length){
+    // multiple articles fetch
+    var stores = [];
+
+    stores = req.articles.map(function(article){
+
+      return function(cb){
+        storeOne(article, function(newArticle){
+          cb(null, newArticle || article);
+        });
+      };
+
+    });
+
+    async.series(stores, function(err, articles){
+      if (onError(err)) return next();
+      req.articles = articles;
+      next();
+    });
+
+    return;
   }
 
   next();

@@ -18,7 +18,7 @@ describe('Router', function(){
     mongoose.connect(config.db.url || ('mongodb://' + config.db.host + '/'+ config.db.name));
     require('../../models')();
     Article = mongoose.model('Article');
-    done();
+    Article.remove({}, done);
   });
 
   after(function(done){
@@ -39,7 +39,7 @@ describe('Router', function(){
 
       request.get(api_url + '/articles/' + feedUrl, function(err, res, body){
         // Fetch article to RSS and store in DB
-        if (err) return done(err);
+        expect(err).to.not.be.ok();
         expect(res.statusCode).to.be.equal(200);
 
         expect(body).to.be.an('object');
@@ -84,7 +84,7 @@ describe('Router', function(){
     var feedUrl = 'test/rocking/bad';
 
     request.get(api_url + '/articles/' + feedUrl, function(err, res, body){
-      if (err) return done(err);
+      expect(err).to.not.be.ok();
       expect(res.statusCode).to.be.equal(400);
       done();
     });
@@ -96,11 +96,11 @@ describe('Router', function(){
     var timestamp_prev = new Date();
 
     Article.find({ title: regex }, function(err, articles){
-      if (err) return done(err);
+      expect(err).to.not.be.ok();
       expect(articles.length).to.be.equal(0);
 
       request.get(api_url + '/articles', function(err, res, body){
-        if (err) return done(err);
+        expect(err).to.not.be.ok();
         expect(res.statusCode).to.be.equal(200);
 
         expect(body).to.be.an('array');
@@ -155,7 +155,7 @@ describe('Router', function(){
     var timestamp_first = new Date();
 
     request.get(api_url + '/articles?year=2015&month=4', function(err, res, body){
-      if (err) return done(err);
+      expect(err).to.not.be.ok();
       expect(res.statusCode).to.be.equal(200);
 
       expect(body).to.be.an('array');
@@ -190,9 +190,10 @@ describe('Router', function(){
         // should re-fetch RSS and update it
         expect(new Date(body[0].fetched_at)).to.be.greaterThan(timestamp_second);
         expect(new Date(body[0].updated_at)).to.be.greaterThan(timestamp_second);
+
+        done();
       });
 
-      done();
     });
 
   });

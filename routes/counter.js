@@ -15,9 +15,11 @@ var Article = mongoose.model('Article');
 
 var counter = require('../counter');
 var rssFeed = require('../rssfeed');
+var scraper = require('../scraper');
 
 module.exports = function(config) {
   rssFeed.configure(config.rss);
+  scraper.configure(config.scraper);
 
   var router = express.Router();
 
@@ -28,8 +30,8 @@ module.exports = function(config) {
   //router.get('/counts', isAuth, getByUrl);
   //router.get('/rss_counts', isAuth, getCache, checkAndUpdate, sendCounters);
 
-  router.get('/articles', fetchArticles, mapArticles, storeArticles, sendArticles);
-  router.get('/articles/*', setArticleUrl, fetchArticles, mapArticles, storeArticles, sendArticle);
+  router.get('/articles', fetchRSS, map, cache, send);
+  router.get('/articles/*', parseURL, fetchRSS, map, cache, sendOne);
 
   return router;
 };
@@ -42,7 +44,7 @@ function isAuth(req, res, next){
   next();
 }
 
-function setArticleUrl(req, res, next){
+function parseURL(req, res, next){
   var url = req.url.replace('/articles/', '');
   var purl = nURL.parse(url);
 
@@ -54,7 +56,7 @@ function setArticleUrl(req, res, next){
   next();
 }
 
-function fetchArticles(req, res, next){
+function fetchRSS(req, res, next){
 
   function throwError(err){
     if (err) {
@@ -98,7 +100,7 @@ function fetchArticles(req, res, next){
   });
 }
 
-function mapArticles(req, res, next){
+function map(req, res, next){
 
   if (req.article){
     var lnk = req.article.meta.link;
@@ -133,7 +135,7 @@ function mapArticles(req, res, next){
   next();
 }
 
-function storeArticles(req, res, next){
+function cache(req, res, next){
 
   function onError(err){
     if (err) {
@@ -153,9 +155,23 @@ function storeArticles(req, res, next){
 
         var article = new Article(_article);
 
-        article.save(function(err, article){
-          if (onError(err)) return done();
-          done(article);
+        scraper.scrape(_article.url, function(err, result){
+          if (err) {
+            if (process.env.NODE_ENV != "test" && err.code !== 'ETIMEDOUT'){
+              console.log(err);
+            }
+          }
+          else if (result) {
+            article.title = result.title || article.title;
+            article.text = result.text;
+            article.readtime = result.readtime;
+          }
+
+          article.save(function(err, article){
+            if (onError(err)) return done();
+            done(article);
+          });
+
         });
 
         return;
@@ -207,11 +223,11 @@ function storeArticles(req, res, next){
   next();
 }
 
-function sendArticles(req, res){
+function send(req, res){
   res.send(req.articles || []);
 }
 
-function sendArticle(req, res){
+function sendOne(req, res){
   res.send(req.article);
 }
 

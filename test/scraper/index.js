@@ -11,7 +11,8 @@ var wordsPerMinute = 270;
 scraper.configure({
   "title-selector": ".post-title",
   "content-selector": ".post-inner .entry",
-  "words-per-minute": wordsPerMinute
+  "words-per-minute": wordsPerMinute,
+  "fetch-timeout": 3000
 });
 
 var testHTML, testText;
@@ -33,9 +34,11 @@ describe('Scrapper', function(){
             var req = new request.Request({ url: url });
 
             setTimeout(function(){
-              var res = fs.createReadStream(basePath + '/test_page.html');
-              res.statusCode = 200;
-              res.body = testHTML;
+              var res = {
+                statusCode: 200,
+                body: testHTML
+              };
+
               req.emit('response', res);
               req.emit('end');
             }, 1);

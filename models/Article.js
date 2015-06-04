@@ -5,6 +5,7 @@ module.exports = {
   , "tail": { type: String }
   , "title": { type: String }
   , "text": { type: String }
+  , "readtime": { type: Number, default: 0 }
   , "comments": { type: Number, default: 0 }
   , "published_at": { type: Date, default: Date.now }
 

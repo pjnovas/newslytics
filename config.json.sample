@@ -31,7 +31,8 @@
     "append": "?feed=rss2"
   },
   "scraper": {
-    "title-selector": "post-title",
-    "content-selector": ""
-  },
+    "title-selector": ".post-title",
+    "content-selector": ".post-inner .entry",
+    "words-per-minute": 270
+  }
 }

@@ -4,13 +4,15 @@ var request = require('request')
   , expect = require('expect.js')
   , moment = require('moment')
   , mongoose = require('mongoose')
+  , fs = require('fs')
+  , nock = require('nock')
   , config = require('../../config.test');
 
 var api_url = 'http://localhost:' + (config.port || 3000) + '/api';
 
 request = request.defaults({ json: true });
 
-var Article;
+var Article, scrapeHTML;
 
 describe('Router', function(){
 
@@ -18,10 +20,17 @@ describe('Router', function(){
     mongoose.connect(config.db.url || ('mongodb://' + config.db.host + '/'+ config.db.name));
     require('../../models')();
     Article = mongoose.model('Article');
-    Article.remove({}, done);
+
+    fs.readFile('../test_page.html', 'utf8', function (err1, _html) {
+      scrapeHTML = _html;
+
+      Article.remove({}, done);
+    });
+
   });
 
   after(function(done){
+    nock.restore();
     Article.remove({}, done);
   });
 
@@ -29,6 +38,10 @@ describe('Router', function(){
     var path = '2013/12/happiness/';
     var feedUrl = config.rss.origin + path;
     var urlTest = 'http://test.com/' + path;
+
+    nock(urlTest)
+      .get('?feed=rss2')
+      .reply(200, scrapeHTML);
 
     var timestamp_prev = new Date();
 

@@ -157,9 +157,7 @@ function cache(req, res, next){
 
         scraper.scrape(_article.url, function(err, result){
           if (err) {
-            if (process.env.NODE_ENV != "test" && err.code !== 'ETIMEDOUT'){
-              console.log(err);
-            }
+            console.log(err);
           }
           else if (result) {
             article.title = result.title || article.title;

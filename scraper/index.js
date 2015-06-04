@@ -53,14 +53,12 @@ function fetch(url, cb) {
 
   function done(err) {
     if (err) {
-      if (process.env.NODE_ENV != "test" && err.code !== 'ETIMEDOUT'){
-        console.log(err, err.stack);
-      }
+      console.log(err, err.stack);
     }
     cb && cb(err, result);
   }
 
-  var req = request.get(url, { timeout: config["fetch-timeout"] || 5000, pool: false });
+  var req = request.get(url, { timeout: config["fetch-timeout"] || 5000 , pool: false });
   req.setMaxListeners(50);
 
   // Some feeds do not respond without user-agent and accept headers.
@@ -77,6 +75,3 @@ function fetch(url, cb) {
   });
   req.on('end', done);
 }
-
-
-

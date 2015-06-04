@@ -58,9 +58,8 @@ describe('RSS Feed', function(){
 
   });
 
-  after(function(done){
+  after(function(){
     request.get.restore();
-    done();
   });
 
   it('must fetch one url by RSS feed', function(done){

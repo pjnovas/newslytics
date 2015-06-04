@@ -29,5 +29,9 @@
   "rss": {
     "origin": "http://example.com/",
     "append": "?feed=rss2"
-  }
+  },
+  "scraper": {
+    "title-selector": "post-title",
+    "content-selector": ""
+  },
 }

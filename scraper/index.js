@@ -51,27 +51,21 @@ module.exports = {
 function fetch(url, cb) {
   var result = "";
 
-  function done(err) {
+  request.get({
+    uri: url,
+    headers: {
+      'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36',
+      'accept': 'text/html'
+    },
+  }, function(err, res, body){
     if (err) {
       console.log(err, err.stack);
     }
-    cb && cb(err, result);
-  }
 
-  var req = request.get(url, { timeout: config["fetch-timeout"] || 5000 , pool: false });
-  req.setMaxListeners(50);
-
-  // Some feeds do not respond without user-agent and accept headers.
-  req.setHeader('user-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36');
-  req.setHeader('accept', 'text/html,application/xhtml+xml,application/rss+xml');
-
-  req.on('error', done);
-  req.on('response', function(res) {
     if (res.statusCode != 200) {
       return this.emit('error', new Error('Bad status code ' + res.statusCode));
     }
 
-    result = res.body;
+    cb(err, body);
   });
-  req.on('end', done);
 }

@@ -30,11 +30,11 @@ function fetchAndRefresh(){
   blockState();
 
   $.ajax({
-    url: '/counts?url=' + url,
+    url: '/api/articles/' + url,
     dataType: 'json',
   })
-  .done(function(counters) {
-    createCounter(url, setScore(counters));
+  .done(function(article) {
+    createCounter(url, setScore(article));
     resetState();
   })
   .error(function(err,a,b){
@@ -48,13 +48,13 @@ function fetchRSS(){
   blockState();
 
   $.ajax({
-    url: '/rss_counts',
+    url: '/api/articles',
     dataType: 'json',
   })
-  .done(function(res) {
+  .done(function(articles) {
 
-    res.data.forEach(function(data){
-      createCounter(data.url, setScore(data.counters));
+    articles.forEach(function(article){
+      createCounter(article.url, setScore(article));
     });
 
     resetState();
@@ -65,8 +65,9 @@ function fetchRSS(){
   });
 }
 
-function setScore(counters){
+function setScore(article){
   var sum = 0;
+  var counters = article.counters;
   counters.socialScore = 0;
 
   for (var p in counters){
@@ -80,10 +81,11 @@ function setScore(counters){
     counters.socialScore = (sum * 100) / tGA;
   }
 
-  return counters;
+  return article;
 }
 
-function createCounter(url, counters){
+function createCounter(url, article){
+  var counters = article.counters;
   var parsed = url.split('/'),
     tail = parsed[parsed.length-1] || parsed[parsed.length-2];
 

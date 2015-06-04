@@ -1,10 +1,7 @@
 
 var debug = require('debug')('social-counter:router');
 
-var jf = require('jsonfile')
-  , countersPath = global.appRoot + '/rssfeed/counters.json'
-  , moment = require("moment")
-  , async = require("async")
+var async = require("async")
 
   , express = require('express')
   , nURL = require('url')
@@ -27,11 +24,8 @@ module.exports = function(config) {
     router.use(isAuth);
   }
 
-  //router.get('/counts', isAuth, getByUrl);
-  //router.get('/rss_counts', isAuth, getCache, checkAndUpdate, sendCounters);
-
-  router.get('/articles', fetchRSS, map, cache, send);
-  router.get('/articles/*', parseURL, fetchRSS, map, cache, sendOne);
+  router.get('/articles', fetchRSS, map, cache, ga, social, send);
+  router.get('/articles/*', parseURL, fetchRSS, map, cache, ga, social, sendOne);
 
   return router;
 };
@@ -57,6 +51,7 @@ function parseURL(req, res, next){
 }
 
 function fetchRSS(req, res, next){
+  console.log('fetchRSS > ');
 
   function throwError(err){
     if (err) {
@@ -68,7 +63,7 @@ function fetchRSS(req, res, next){
 
   if (req.articleUrl){
     // One article by url
-
+    console.log('fetchRSS > ONE ARTICLE ' + req.articleUrl);
     rssFeed.get(req.articleUrl, function(err, article){
       if (throwError(err)) return;
       req.article = article;
@@ -82,8 +77,9 @@ function fetchRSS(req, res, next){
 
   if (!search || _.isEmpty(search)){
     // No search query > get last 10 RSS feed
-
+    console.log('fetchRSS > GET FEED ');
     rssFeed.getFeed(function(err, result){
+      console.log('fetchRSS > GET FEED > DONE ');
       if (throwError(err)) return;
       req.articles = result.items;
       next();
@@ -92,8 +88,10 @@ function fetchRSS(req, res, next){
     return;
   }
 
+  console.log('fetchRSS > SEARCH FEED', search);
   // Get by a search
   rssFeed.search(search, function(err, result){
+    console.log('fetchRSS > SEARCH FEED > DONE ');
     if (throwError(err)) return;
     req.articles = result.items;
     next();
@@ -136,6 +134,7 @@ function map(req, res, next){
 }
 
 function cache(req, res, next){
+  console.log('cache: ONE ARTICLE > ');
 
   function onError(err){
     if (err) {
@@ -152,10 +151,13 @@ function cache(req, res, next){
 
       if (!article){
         // article not cached, create one
+        console.log('cache: NEW ARTICLE ');
 
         var article = new Article(_article);
 
+        console.log('cache: Scrape ARTICLE ' + _article.url);
         scraper.scrape(_article.url, function(err, result){
+          console.log('cache: Scraped ARTICLE ');
           if (err) {
             console.log(err);
           }
@@ -164,6 +166,9 @@ function cache(req, res, next){
             article.text = result.text;
             article.readtime = result.readtime;
           }
+
+          console.log('cache: Scraped ARTICLE result ');
+          console.dir(result);
 
           article.save(function(err, article){
             if (onError(err)) return done();
@@ -189,7 +194,9 @@ function cache(req, res, next){
 
   if (req.article){
     // only one article fetch
+    console.log('cache: only one article fetch ');
     return storeOne(req.article, function(article){
+      console.log('cache: STORED ');
       req.article = article || req.article;
       next();
     });
@@ -221,190 +228,78 @@ function cache(req, res, next){
   next();
 }
 
-function send(req, res){
-  res.send(req.articles || []);
-}
-
-function sendOne(req, res){
-  res.send(req.article);
-}
-
-
-/************************************************************************/
-
-
-/* GET Counts by url */
-function getByUrl(req, res, next) {
-  var url = req.query.url;
-
-  if (!url){
-    return res.status(400).send('URL parameter expected');
+function ga(req, res, next){
+  if (process.env.NODE_ENV == "test"){
+    return next();
   }
 
-  counter.get(url, function(error, counts){
-    if (error) {
-      console.dir(error);
-      return res.status(500).send(error);
-    }
-
-    res.send(counts);
-  });
-}
-
-function setUrls(req, res, next) {
-  req.articleURLs =
-    (req.query.urls && req.query.urls.split(',')) ||
-    [ req.query.url ];
-
-  if (!req.articleURLs || !req.articleURLs.length){
-    return res.status(400).send('url or urls parameter expected');
-  }
+  //TODO: Cache
+  //TODO: get GA separated
 
   next();
 }
 
-function setArticles(req, res, next){
-
-  // Articles
-  //1. get articles from DB
-
-  Article.find({ url: { $in: req.articleURLs } }, function(err, articles){
-    if (err) {
-      debug('Error on fetching Articles', err);
-      return res.status(500).send(err.message);
-    }
-
-    req.articles = articles || [];
-
-    req.newArticlesURLs = _.difference(
-      req.articleURLs,
-      req.articles.map(function(article){ return article.url; })
-    );
-
-    next();
-  });
-
-  // Feed
-  //2. get and store new articles (not found on db) using feed
-  // url = url + config.rss.append;
-  //3. Scrappe content and store text
-
-  // GA
-  //4. get googleAnalytics cache for each article
-  //5. fetch old and non existant ones (more than 1 Day or not found)
-
-  // Social
-  //6. Get social Cache for each url
-  //7. fetch old and non existant ones (more than 1 Hour or not found)
-}
-
-function fetchNewArticles(req, res, next){
-
-  if (!req.newArticlesURLs || !req.newArticlesURLs.length){
-    // no new urls to fetch
+function social(req, res, next){
+  if (process.env.NODE_ENV == "test"){
     return next();
   }
 
-  rssFeed.get(req.newArticlesURLs, function(err, articles){
-    if (err) {
-      debug('Error on fetching NEW RSSFeed Articles', err);
-      return res.status(500).send(err.message);
-    }
+  //TODO: Cache
 
-    console.dir(articles);
-    res.send(200);
-    return;
+  if (req.article){
+    console.log('social: ONE ARTICLE > ');
 
-    Article.create(articles, function(err, newArticles){
-      if (err) {
-        debug('Error on creating NEW RSSFeed Articles', err);
-        return res.status(500).send(err.message);
-      }
-
-      //TODO: Scrap text of new articles and update TEXT property
-
-      req.articles = req.articles.concat(newArticles || []);
-      next();
-    });
-
-  });
-}
-
-function setGoogleAnalytics(req, res, next){
-  /*
-  counter.getAll(
-    req.articles.map(function(article){ return article.url; })
-  );
-  */
-}
-
-function setSocial(req, res, next){
-  /*
-  counter.getAll(
-    req.articles.map(function(article){ return article.url; })
-  );
-  */
-}
-
-function getCache(req, res, next){
-
-  jf.readFile(countersPath, function(err, obj) {
-    if (err){
-      console.log(err);
-      obj = { timestamp: 0, data: [] };
-    }
-
-    res.counters = obj;
-    next();
-  });
-
-}
-
-function checkAndUpdate(req, res, next){
-
-  var today = moment().format("DD-MM-YYYY HH");
-  var datetime = moment.unix(res.counters.timestamp);
-
-  if (datetime.format("DD-MM-YYYY HH") === today){
-    next();
-    return;
-  }
-
-  function SaveAndContinue(newObj){
-    jf.writeFile(countersPath, newObj, function(err){
-      if (err){
-        console.log(err);
-        next();
-        return;
-      }
-
-      res.counters = newObj;
-      next();
-    });
-  }
-
-  rssFeed.get(function(error, urls){
-    if (error) {
-      console.dir(error);
-      return res.status(500).send(error);
-    }
-
-    counter.getAll(urls, function(error, countList){
+    counter.get(req.article.url, function(error, count){
       if (error) {
         console.dir(error);
         return res.status(500).send(error);
       }
 
-      SaveAndContinue({
-        timestamp: moment().unix(),
-        data: countList
-      });
-
+      console.log('ONE ARTICLE COUNTERS > ');
+      console.dir(count);
+      req.article = req.article.toJSON();
+      req.article.counters = count;
+      next();
     });
-  });
 
+    return;
+  }
+
+  if (req.articles && req.articles.length > 0){
+    var toFill = req.articles.map(function(article){
+      return article.toJSON();
+    });
+
+    console.log('PRE > filling articles COUNTERS');
+    console.dir(toFill);
+
+    counter.getAll(toFill, function(error, filled){
+      if (error) {
+        console.dir(error);
+        return res.status(500).send(error);
+      }
+
+      console.log('filling articles COUNTERS');
+      console.dir(filled);
+
+      req.articles = filled;
+      console.log('filled articles > ' + filled.length);
+
+      next();
+    });
+
+    return;
+  }
+
+  next();
 }
 
-function sendCounters(req, res){
-  res.send(res.counters);
+function send(req, res){
+  res.send(req.articles || []);
+}
+
+function sendOne(req, res){
+  console.log('SENDING ONE ARTICLE > ');
+  console.dir(req.article);
+  res.send(req.article);
 }

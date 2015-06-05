@@ -65,6 +65,10 @@ function fetchRSS(req, res, next){
     // One article by url
     console.log('fetchRSS > ONE ARTICLE ' + req.articleUrl);
     rssFeed.get(req.articleUrl, function(err, article){
+      if (err){
+        console.log("ERROR ON RSS FETCH ONE");
+        console.dir(err);
+      }
       if (throwError(err)) return;
       req.article = article;
       next();
@@ -96,6 +100,7 @@ function fetchRSS(req, res, next){
     req.articles = result.items;
     next();
   });
+
 }
 
 function map(req, res, next){
@@ -134,7 +139,7 @@ function map(req, res, next){
 }
 
 function cache(req, res, next){
-  console.log('cache: ONE ARTICLE > ');
+  console.log('cache: ARTICLES > ');
 
   function onError(err){
     if (err) {

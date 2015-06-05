@@ -10,6 +10,7 @@ module.exports = {
   },
 
   get: function(url, done){
+    console.log('FETCHING RSS ONE: ' + url + config.append);
     fetch(url + config.append, done);
   },
 
@@ -28,6 +29,8 @@ module.exports = {
       }
     }
 
+    console.log('RSS Feed SEARCH FOR > ' + origin + append + tail);
+
     fetch(origin + append + tail, done);
   }
 
@@ -42,7 +45,7 @@ function fetch(url, cb) {
     cb && cb(err, result);
   }
 
-  var req = request.get(url, { timeout: 5000, pool: false });
+  var req = request.get(url, { timeout: 10000, pool: false });
   req.setMaxListeners(50);
 
   // Some feeds do not respond without user-agent and accept headers.
@@ -61,7 +64,13 @@ function fetch(url, cb) {
   });
 
   feedparser.on('error', done);
-  feedparser.on('end', done);
+
+  feedparser.on('end', function(){
+    result.meta = this.meta || {};
+    result.items = result.items || [];
+    done();
+  });
+
   feedparser.on('readable', function() {
     var stream = this
       , meta = this.meta

@@ -47,8 +47,14 @@ function fetchAndRefresh(){
 function fetchRSS(){
   blockState();
 
+  var query = $('#rss-query').val().trim();
+
+  if (query.trim().length){
+    query = (query.indexOf('?') > -1) ? query : '?' + query;
+  }
+
   $.ajax({
-    url: '/api/articles',
+    url: '/api/articles' + query,
     dataType: 'json',
   })
   .done(function(articles) {
@@ -89,17 +95,17 @@ function createCounter(url, article){
   var parsed = url.split('/'),
     tail = parsed[parsed.length-1] || parsed[parsed.length-2];
 
+  article.url = article.url || url;
+  article.tail = article.tail || tail;
+
   var template = Handlebars.compile($("#metric-template").html());
-  var html = template({
-    url: url,
-    tail: tail,
-    counters: counters
-  });
+  var html = template(article);
 
   all.push({
     url: url,
     tail: tail,
     counters: counters,
+    article: article,
     svg: null,
     html: html
   });
@@ -292,8 +298,9 @@ function draw(item){
     })(item);
   });
 
+  var title = (item.article && item.article.title) || item.tail;
   $metricParent
-    .prepend('<a class="item" href="' + item.url + '" target="_blank">' + item.tail + '</a>')
+    .prepend('<a class="item" href="' + item.url + '" target="_blank">' + title + '</a>')
     .children('.nav-tabs').append(close)
 
   $('.collapser', $metricParent).on('click', function(){
@@ -393,4 +400,20 @@ Handlebars.registerHelper('parseValue', function(key, value) {
   }
 
   return value;
+});
+
+Handlebars.registerHelper('parseTime', function(value) {
+  return value.toFixed(1) + 's';
+});
+
+Handlebars.registerHelper('trimText', function(value) {
+  return value.trim();
+});
+
+Handlebars.registerHelper('countWords', function(value) {
+  return value.trim().split(/\s+/g).length;
+});
+
+Handlebars.registerHelper('parseDate', function(value) {
+  return moment(value).format("DD/MM/YYYY hh:mm");
 });

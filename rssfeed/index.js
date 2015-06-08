@@ -2,6 +2,7 @@
 var request = require('request');
 var FeedParser = require('feedparser');
 var config = require("../config.json").rss;
+var moment = require("moment");
 
 module.exports = {
 
@@ -19,19 +20,32 @@ module.exports = {
   },
 
   search: function(query, done){
-    var origin = config.origin;
+    var origin = config.origin.replace(/\/\s*$/, ''); //remove last '/'
     var append = config.append;
-    var tail = '';
 
-    for (var p in query){
-      if (query.hasOwnProperty(p)){
-        tail += '&' + p + '=' + query[p];
-      }
+    var dateAppend = '';
+    if (query.hasOwnProperty('y')){
+      dateAppend += '/' + query.y;
+    }
+    if (query.hasOwnProperty('m')){
+      dateAppend += '/' + query.m;
+    }
+    if (query.hasOwnProperty('d')){
+      dateAppend += '/' + query.d;
     }
 
-    console.log('RSS Feed SEARCH FOR > ' + origin + append + tail);
+    var keywords = '';
+    if (query.hasOwnProperty('s')){
+      keywords = '?s=' + query.s;
+    }
 
-    fetch(origin + append + tail, done);
+    var url = origin;
+    if (dateAppend) url += dateAppend;
+    if (keywords) url += keywords + '&' + append;
+    else url += '?' + append;
+
+    console.log('RSS Feed SEARCH FOR > ' + url);
+    fetch(url, done);
   }
 
 };

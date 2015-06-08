@@ -7,6 +7,7 @@ var template;
 $(function(){
   $('#send-url').on('click', fetchAndRefresh);
   $('#get-rss').on('click', fetchRSS);
+
   template = Handlebars.compile($("#metric-template").html());
 });
 
@@ -47,10 +48,24 @@ function fetchAndRefresh(){
 function fetchRSS(){
   blockState();
 
-  var query = $('#rss-query').val().trim();
+  var search = $('#rss-query').val().trim();
+  var year = $('#rss-date-year').val().trim();
+  var month = $('#rss-date-month').val().trim();
+  var day = $('#rss-date-day').val().trim();
 
-  if (query.trim().length){
-    query = (query.indexOf('?') > -1) ? query : '?' + query;
+  var query = '';
+  if (search.trim().length){
+    query = '?s=' + search;
+  }
+
+  if (year){
+    query += (query ? '&' : '?') + 'y=' + year;
+  }
+  if (month){
+    query += (query ? '&' : '?') + 'm=' + month;
+  }
+  if (day){
+    query += (query ? '&' : '?') + 'd=' + day;
   }
 
   $.ajax({
@@ -403,17 +418,17 @@ Handlebars.registerHelper('parseValue', function(key, value) {
 });
 
 Handlebars.registerHelper('parseTime', function(value) {
-  return value.toFixed(1) + 's';
+  return value ? value.toFixed(1) + 's' : '';
 });
 
 Handlebars.registerHelper('trimText', function(value) {
-  return value.trim();
+  return value ? value.trim() : '';
 });
 
 Handlebars.registerHelper('countWords', function(value) {
-  return value.trim().split(/\s+/g).length;
+  return value ? value.trim().split(/\s+/g).length : 0;
 });
 
 Handlebars.registerHelper('parseDate', function(value) {
-  return moment(value).format("DD/MM/YYYY hh:mm");
+  return value ? moment(value).format("DD/MM/YYYY hh:mm") : '';
 });

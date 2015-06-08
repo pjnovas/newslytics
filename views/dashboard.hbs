@@ -3,13 +3,24 @@
 <div class="container-fluid">
   <div class="row">
     <div class="form-group col-xs-12 col-sm-6 col-md-8">
-      <input id="url" type="text" class="form-control col-xs-12" placeholder="ENTER URL here">
+      <input id="url" type="text" class="form-control" placeholder="ENTER URL here">
     </div>
     <button id="send-url" class="btn btn-default col-xs-4 col-xs-offset-1 col-sm-2 col-md-1" data-loading-text="Loading...">Fetch ONE</button>
   </div>
   <div class="row">
-    <div class="form-group col-xs-12 col-sm-6 col-md-8">
-      <input id="rss-query" type="text" class="form-control col-xs-12" placeholder="enter query string for RSS or blank for last feed. i.e: day=3&monthnum=1&year=2015">
+    <div class="form-group col-xs-12 col-sm-4 col-md-4">
+      <input id="rss-query" type="text" class="form-control" placeholder="search keyword">
+    </div>
+    <div class="form-group col-xs-12 col-sm-4 col-md-4">
+      <div class="form-group col-xs-4 col-sm-4 col-md-4">
+        <input id="rss-date-year" type="text" class="form-control" placeholder="year">
+      </div>
+      <div class="form-group col-xs-4 col-sm-4 col-md-4">
+        <input id="rss-date-month" type="text" class="form-control" placeholder="month">
+      </div>
+      <div class="form-group col-xs-4 col-sm-4 col-md-4">
+        <input id="rss-date-day" type="text" class="form-control" placeholder="day">
+      </div>
     </div>
     <button id="get-rss" class="btn btn-default col-xs-4 col-xs-offset-2 col-sm-offset-1 col-sm-2 col-md-1" data-loading-text="Loading...">RSS FEED</button>
   </div>
@@ -116,5 +127,5 @@
 <script src="/js/textures.min.js"></script>
 <script src="/js/handlebars-v3.0.3.js"></script>
 <script src="/js/moment.min.js"></script>
-<script src="/js/dashboard.js"></script>
 
+<script src="/js/dashboard.js"></script>

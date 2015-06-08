@@ -26,6 +26,7 @@ function fetchAndRefresh(){
 
   if (url.length === 0){
     window.alert('enter a url!');
+    return;
   }
 
   blockState();

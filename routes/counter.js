@@ -68,8 +68,16 @@ function fetchRSS(req, res, next){
       if (err){
         console.log("ERROR ON RSS FETCH ONE");
         console.dir(err);
+
+        req.article = {
+          url: req.articleUrl
+        };
+        req.failedRSS = true;
+
+        next();
+        return;
       }
-      if (throwError(err)) return;
+
       req.article = article;
       next();
     });
@@ -106,6 +114,12 @@ function fetchRSS(req, res, next){
 function map(req, res, next){
 
   if (req.article){
+
+    if (req.failedRSS){
+      // throws a lot of Timeouts, so keep going
+      return next();
+    }
+
     var lnk = req.article.meta.link;
 
     req.article = {
@@ -158,6 +172,11 @@ function cache(req, res, next){
         // article not cached, create one
         console.log('cache: NEW ARTICLE ');
 
+        if (req.article && req.failedRSS){
+          res.send(404, 'RSS failed and the article was not cached');
+          return;
+        }
+
         var article = new Article(_article);
 
         console.log('cache: Scrape ARTICLE ' + _article.url);
@@ -185,8 +204,13 @@ function cache(req, res, next){
         return;
       }
 
+      if (req.failedRSS){
+        // failed RSS don't update
+        return done(article);
+      }
+
       // article cached > update it
-      article.comments = _article.comments;
+      article.comments = _article.comments || article.comments;
       article.fetched_at = _article.fetched_at || new Date();
 
       article.save(function(err, article){

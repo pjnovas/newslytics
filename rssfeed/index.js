@@ -12,7 +12,7 @@ module.exports = {
 
   get: function(url, done){
     console.log('FETCHING RSS ONE: ' + url + config.append);
-    fetch(url + config.append, done);
+    fetch(url + '?' + config.append, done);
   },
 
   getFeed: function(done){

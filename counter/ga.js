@@ -26,6 +26,7 @@ var metrics = [
   , 'ga:avgSessionDuration'
   //, 'ga:sessionDuration'
   //, 'ga:sessionsPerUser'
+  //, 'ga:users'
 
   //, 'ga:bounces'
   , 'ga:bouncerate'
@@ -66,13 +67,21 @@ function getOptions(done){
 }
 
 function fetch(_url, done){
+  var exp = 'ga:pagePath=~^*';
+  var maxLen = 128 - exp.length;
 
   getOptions(function(err, options){
     if (err) return done(err);
 
     if (_url){
-      //console.log(url.parse(_url).path);
-      options.filters = 'ga:pagePath=~^*' + url.parse(_url).path;
+      var urlPath = url.parse(_url).path;
+
+      // GA: Regular expression must be less than or equal to 128 characters.
+      if (urlPath.length > maxLen){
+        urlPath = urlPath.substr(-maxLen);
+      }
+
+      options.filters = exp + urlPath;
     }
 
     // More info: https://developers.google.com/analytics/devguides/reporting/core/v3/reference

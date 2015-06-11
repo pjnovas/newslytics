@@ -24,7 +24,7 @@ var scopes = [
 var metrics = [
     'ga:sessions'
   , 'ga:avgSessionDuration'
-  //, 'ga:sessionDuration'
+  , 'ga:sessionDuration'
   //, 'ga:sessionsPerUser'
   //, 'ga:users'
 

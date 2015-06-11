@@ -7,13 +7,13 @@
 
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  padding-top: 10px;
-
+  padding-top: 70px;
   background: url('/images/greyzz.png');
 }
 
 a {
   color: #00B7FF;
+  cursor: pointer;
 }
 
 div.metric {
@@ -50,10 +50,43 @@ div.metric {
   }
 }
 
+.data-posts {
+
+  >thead>tr>th {
+    text-align: center;
+
+    &:first-child{
+      text-align: left;
+    }
+  }
+
+  >tbody>tr>td {
+    text-align: right;
+
+    &:first-child{
+      text-align: left;
+    }
+  }
+
+  .details {
+    padding-left: 0;
+    list-style: none;
+
+    li {
+      margin: 2px 0;
+
+      .badge {
+        color: #3E3E3E;
+        background-color: #E3E3E3;
+      }
+    }
+  }
+}
+
 .tab-content {
   background: #fff;
   border: 1px solid #ddd;
-  border-top: none;
+  /*border-top: none;*/
   padding: 10px;
 
   .score {

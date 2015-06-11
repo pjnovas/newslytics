@@ -1,0 +1,106 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+
+    <a class="navbar-brand" href="#">Newslytics</a>
+
+    <form class="navbar-form navbar-left collapse navbar-collapse">
+      <div class="form-group">
+        <input id="url" type="text" class="form-control" placeholder="type or paste URL">
+        <button id="send-url" type="button" class="btn btn-default" data-loading-text="Loading...">Add</button>
+      </div>
+    </form>
+
+    <p class="navbar-text navbar-right post-count" style="margin-right:15px;">
+      <span>0</span> posts</p>
+
+    <ul class="nav navbar-nav navbar-right">
+      <li>
+        <a data-target="visual" role="tab" data-toggle="tab">Visual</a>
+      </li>
+      <li class="active">
+        <a data-target="data" role="tab" data-toggle="tab">Data</a>
+      </li>
+    </ul>
+
+  </div>
+</nav>
+
+<div class="container-fluid">
+
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane visual">VISUAL</div>
+    <div role="tabpanel" class="tab-pane data active">
+      <table class="table table-striped data-posts">
+
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Publish</th>
+            <th>Visits</th>
+            <th style="width: 130px;">Facebook</th>
+            <th>Twitter</th>
+            <th style="width: 80px;">Social %</th>
+            <th style="width: 200px;">Duration</th>
+            <th style="width: 140px;">Comments</th>
+            <th style="width: 90px;">Bounce %</th>
+          </tr>
+        </thead>
+
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+
+<script id="tr-metric-template" type="text/x-handlebars-template">
+  <tr>
+    <td><a href="\{{url}}" target="_blank">\{{title}}</a></td>
+    <td>\{{parseDate published_at}}</td>
+    <td>\{{counters.googleanalytics.total}}</td>
+    <td><a class="collapser">\{{counters.facebook.total}}</a>
+      <ul class="collapse details">
+       \{{#each counters.facebook.details}}
+        <li>\{{fancyName @key}}
+          <span class="badge">\{{parseValue @key this}}</span>
+        </li>
+        \{{/each}}
+      </ul>
+    </td>
+    <td>\{{counters.twitter.total}}</td>
+    <td>\{{parseFloat counters.socialScore}}</td>
+    <td><a class="collapser">\{{getGA "sessionDuration" counters}}</a>
+      <ul class="collapse details">
+        <li>SessionTime avg <span class="badge">\{{getGA "avgSessionDuration" counters}}</span>
+        </li>
+        <li>ReadTime avg <span class="badge">\{{parseTime readtime}}</span>
+        </li>
+        <li>Words <span class="badge">\{{countWords text}}</span>
+        </li>
+      </ul>
+    </td>
+    <td><a class="collapser">\{{sum comments counters.facebook.details.comments}}</a>
+      <ul class="collapse details">
+        <li>Facebook <span class="badge">\{{counters.facebook.details.comments}}</span>
+        </li>
+        <li>Wordpress <span class="badge">\{{comments}}</span>
+        </li>
+      </ul>
+    </td>
+    <td>\{{getGA "bouncerate" counters}}</td>
+  </tr>
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script src="/js/textures.min.js"></script>
+<script src="/js/handlebars-v3.0.3.js"></script>
+<script src="/js/moment.min.js"></script>
+
+<script src="/js/dash.js"></script>

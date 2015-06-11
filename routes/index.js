@@ -6,7 +6,7 @@ module.exports = function(config){
 
   /* GET home page. */
   router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Social Counter' });
+    res.render('index', { title: 'newslytics' });
   });
 
   router.get('/login', login);
@@ -14,7 +14,12 @@ module.exports = function(config){
 
   /* GET dashboard page. */
   router.get('/dashboard', checkAuth, function(req, res, next) {
-    res.render('dashboard', { title: 'Social Counter - Dashboard' });
+    res.render('dashboard', { title: 'newslytics - Dashboard' });
+  });
+
+  /* GET new dashboard page. */
+  router.get('/dash', checkAuth, function(req, res, next) {
+    res.render('dash', { title: 'newslytics - Dashboard' });
   });
 
   router.use('/api', require('./counter')(config));

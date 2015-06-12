@@ -7,8 +7,7 @@
 
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  padding-top: 70px;
-  background: url('/images/greyzz.png');
+  padding-top: 50px;
 }
 
 a {
@@ -84,9 +83,7 @@ div.metric {
 }
 
 .tab-content {
-  background: #fff;
-  border: 1px solid #ddd;
-  /*border-top: none;*/
+  border: none;
   padding: 10px;
 
   .score {
@@ -127,6 +124,26 @@ div.metric {
   .googleanalytics { background-color: @color-googleanalytics }
   .socialScore { background-color: @color-socialScore }
 
+}
+
+.tab-pane.visual {
+  display: inline-block;
+
+  .metric {
+    margin: 10px;
+    float: left;
+    position: relative;
+    width: 350px;
+    height: 370px;
+    border: 1px solid #ccc;
+
+    .score {
+
+      .item {
+        border: none;
+      }
+    }
+  }
 }
 
 /* Graphic dashboard */

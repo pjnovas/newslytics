@@ -280,7 +280,108 @@ function sortMetrics($metricParent){
 function draw(item){
   $(item.html).appendTo(".data-posts > tbody");
   $('.post-count > span').text(all.length);
+
+  drawVisual(item);
 }
+
+function drawVisual(item){
+  // taken from http://bl.ocks.org/bbest/2de0e25d4840c68f2db1
+
+  var width = 300,
+    height = 300,
+    radius = Math.min(width, height) / 2,
+    innerRadius = 0.3 * radius;
+
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([0, 0])
+    .html(function(d) {
+      return d.data.label + ": <span style='color:orangered'>" + d.data.score + "</span>";
+    });
+
+  var pie = d3.layout.pie().sort(null).value(function(d) { return d.width; });
+
+  var arc = d3.svg.arc()
+    .innerRadius(innerRadius)
+    .outerRadius(function (d) {
+      return (radius - innerRadius) * (d.data.per / 100.0) + innerRadius;
+    });
+
+  var outlineArc = d3.svg.arc()
+          .innerRadius(innerRadius)
+          .outerRadius(radius);
+
+  var $metric = $('<div class="score"></div>');
+  var title = (item.article && item.article.title) || item.tail;
+  $metric.append('<a class="item" href="' + item.url + '" target="_blank">' + title + '</a>');
+  //.append(close)
+  $('<div class="metric"></div>').append($metric).appendTo('.visual');
+
+  var svg = d3.select($metric[0]).append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .append("g")
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+  svg.call(tip);
+  createTextures(svg);
+
+  item.svg = svg;
+
+  var data = convertData(item);
+
+  var outerPath = svg.selectAll(".outlineArc")
+      .data(pie(data))
+      .enter().append("path")
+      .attr("fill", function(d) { return social_textures_out[d.data.id].url(); })
+      .attr("stroke", "#E6EBE6")
+      .attr("class", "outlineArc")
+      .attr("d", outlineArc);
+
+  var path = svg.selectAll(".solidArc")
+      .data(pie(data))
+      .enter().append("path")
+      .attr("fill", function(d) { return social_textures_in[d.data.id].url(); })
+      .attr("class", "solidArc")
+      .attr("d", arc)
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+
+  var sc = item.counters.socialScore;
+
+  svg.append("svg:text")
+    .attr("class", "aster-score")
+    .attr("dy", ".35em")
+    .attr("text-anchor", "middle")
+    .text(sc ? sc.toFixed(1) + "%" : "-");
+/*
+  var close = $('<a class="btn btn-default close">x</a>').on('click', function(){
+    return (function(_item){
+      removeItem(_item);
+    })(item);
+  });
+
+  var title = (item.article && item.article.title) || item.tail;
+  $metricParent
+    .prepend('<a class="item" href="' + item.url + '" target="_blank">' + title + '</a>')
+    .children('.nav-tabs').append(close)
+
+  $('.collapser', $metricParent).on('click', function(){
+    $('.details', $(this).parents('.list-group-item')).collapse('toggle');
+  });
+
+  $('.nav-tabs a', $metricParent).click(function (e) {
+    e.preventDefault();
+    var ele = $(this);
+    var target = $('.' + ele.attr('data-target'), $metricParent);
+    ele.tab('show');
+
+    $('.tab-pane', $metricParent).removeClass('active');
+    target.addClass('active');
+  });
+*/
+}
+
 /*
 function draw(item){
   // taken from http://bl.ocks.org/bbest/2de0e25d4840c68f2db1

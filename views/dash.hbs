@@ -38,15 +38,15 @@
 
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Publish</th>
-            <th>Visits</th>
-            <th style="width: 130px;">Facebook</th>
-            <th>Twitter</th>
-            <th style="width: 80px;">Social %</th>
-            <th style="width: 200px;">Duration</th>
-            <th style="width: 140px;">Comments</th>
-            <th style="width: 90px;">Bounce %</th>
+            <th data-sort="title">Title</th>
+            <th data-sort="published_at">Publish</th>
+            <th data-sort="counters.googleanalytics.total">Visits</th>
+            <th data-sort="counters.facebook.total" style="width: 130px;">Facebook</th>
+            <th data-sort="counters.twitter.total">Twitter</th>
+            <th data-sort="counters.socialScore" style="width: 80px;">Social %</th>
+            <th data-sort="counters.googleanalytics.details.ga:sessionDuration" style="width: 200px;">Duration</th>
+            <th data-sort="totalComments" style="width: 140px;">Comments</th>
+            <th data-sort="counters.googleanalytics.details.ga:bouncerate" style="width: 90px;">Bounce %</th>
           </tr>
         </thead>
 
@@ -60,7 +60,10 @@
 
 <script id="tr-metric-template" type="text/x-handlebars-template">
   <tr>
-    <td><a href="\{{url}}" target="_blank">\{{title}}</a></td>
+    <td>
+      <a href="\{{url}}" target="_blank">\{{title}}</a>
+      <a id="\{{_id}}" class="btn btn-default close">x</a>
+    </td>
     <td>\{{parseDate published_at}}</td>
     <td>\{{counters.googleanalytics.total}}</td>
     <td><a class="collapser">\{{counters.facebook.total}}</a>
@@ -84,7 +87,7 @@
         </li>
       </ul>
     </td>
-    <td><a class="collapser">\{{sum comments counters.facebook.details.comments}}</a>
+    <td><a class="collapser">\{{totalComments}}</a>
       <ul class="collapse details">
         <li>Facebook <span class="badge">\{{counters.facebook.details.comments}}</span>
         </li>

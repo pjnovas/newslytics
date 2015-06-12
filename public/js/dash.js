@@ -4,6 +4,11 @@ var all = [];
 
 var template;
 
+var sort = {
+  p: 'title',
+  dir: 1
+};
+
 $(function(){
   $('#send-url').on('click', function(){
     fetchAndRefresh();
@@ -43,6 +48,32 @@ $(function(){
     fetchAndRefresh(article.url);
   });
 
+  $('.data-posts').on('click', 'th', function(e){
+    var th = $(this);
+    var p = th.attr('data-sort') || 'title';
+    sort.dir = (p === sort.p && sort.dir > 0 ? -1 : 1);
+    sort.p = p;
+
+    $('.data-posts th.sorting')
+      .removeClass('sorting')
+      .children('div').remove();
+
+    th.addClass('sorting')
+      .append(
+        $('<div class="' + (sort.dir > 0 ? 'asc' : 'desc') + '"></div>')
+      );
+
+    sortAll();
+    drawAll();
+  });
+
+  $('.data-posts th[data-sort=' + sort.p + ']').addClass('sorting')
+    .append($('<div class="' + (sort.dir > 0 ? 'asc' : 'desc') + '"></div>'));
+
+  $('.data-posts').on('click', 'td a.close', function(e){
+    removeById(this.id);
+  });
+
 });
 
 function blockState(){
@@ -70,7 +101,8 @@ function fetchAndRefresh(url){
     dataType: 'json',
   })
   .done(function(article) {
-    createCounter(url, setScore(article));
+    setSums(article);
+    createCounter(url, article);
     resetState();
   })
   .error(function(err,a,b){
@@ -112,7 +144,8 @@ function fetchRSS(){
   .done(function(articles) {
 
     articles.forEach(function(article){
-      createCounter(article.url, setScore(article));
+      setSums(article);
+      createCounter(article.url, article);
     });
 
     resetState();
@@ -121,6 +154,11 @@ function fetchRSS(){
     console.log('ERROR on fetch > ' + err);
     resetState();
   });
+}
+
+function setSums(article){
+  setScore(article);
+  setComments(article);
 }
 
 function setScore(article){
@@ -138,8 +176,17 @@ function setScore(article){
   if (tGA > 0){
     counters.socialScore = (sum * 100) / tGA;
   }
+}
 
-  return article;
+function setComments(article){
+  var counters = article.counters;
+
+  article.totalComments = article.comments || 0;
+
+  article.totalComments +=
+    (counters.facebook &&
+     counters.facebook.details &&
+     counters.facebook.details.comments) || 0;
 }
 
 function createCounter(url, article){
@@ -150,7 +197,6 @@ function createCounter(url, article){
   article.url = article.url || url;
   article.tail = article.tail || tail;
 
-  //var template = Handlebars.compile($("#metric-template").html());
   var html = template(article);
 
   all.push({
@@ -162,14 +208,9 @@ function createCounter(url, article){
     html: html
   });
 
-  if (updateMax(counters)){
-    $('.metric').remove();
-    $('.data-posts > tbody > tr').remove();
-    all.forEach(draw);
-    return;
-  }
-
-  draw(all[all.length-1]);
+  updateMax(counters);
+  sortAll();
+  drawAll();
 }
 
 function updateMax(counter){
@@ -194,19 +235,49 @@ function updateMax(counter){
   return updated;
 }
 
-function removeItem(item){
+function sortAll(){
+  var p = sort.p.split('.');
+  var dir = sort.dir;
+
+  function val(obj){
+    var val = obj.article;
+
+    p.forEach(function(prop){
+      val = (val && val[prop]) || 0;
+    });
+
+    return val;
+  }
+
+  var asc = function(a, b){ return val(a) - val(b); };
+  var desc = function(a, b){ return val(b) - val(a); };
+
+  switch(p[p.length-1]){
+    case 'published_at':
+      asc = function(a, b){ return moment(val(a)) >= moment(val(b)); };
+      desc = function(a, b){ return moment(val(a)) < moment(val(b)); };
+      break;
+    case 'title':
+      asc = function(a, b){ return val(a) >= val(b); };
+      desc = function(a, b){ return val(a) < val(b); };
+      break;
+  }
+
+  if (dir > 0) all.sort(asc);
+  else all.sort(desc);
+}
+
+function removeById(id){
+
   all.forEach(function(_item, i){
-    if (item.url === _item.url){
+    if (_item.article._id === id){
       all.splice(i, 1);
     }
   });
 
-  maxValue = 100;
   updateMax();
-
-  $('.metric').remove();
-  $('.data-posts > tbody > tr').remove();
-  all.forEach(draw);
+  sortAll();
+  drawAll();
 }
 
 var social_textures_in = {};
@@ -277,10 +348,15 @@ function sortMetrics($metricParent){
   });
 }
 
+function drawAll(){
+  $('.metric').remove();
+  $('.data-posts > tbody > tr').remove();
+  all.forEach(draw);
+}
+
 function draw(item){
   $(item.html).appendTo(".data-posts > tbody");
   $('.post-count > span').text(all.length);
-
   drawVisual(item);
 }
 
@@ -292,6 +368,7 @@ function drawVisual(item){
     radius = Math.min(width, height) / 2,
     innerRadius = 0.3 * radius;
 
+  $('.d3-tip').remove();
   var tip = d3.tip()
     .attr('class', 'd3-tip')
     .offset([0, 0])
@@ -314,7 +391,6 @@ function drawVisual(item){
   var $metric = $('<div class="score"></div>');
   var title = (item.article && item.article.title) || item.tail;
   $metric.append('<a class="item" href="' + item.url + '" target="_blank">' + title + '</a>');
-  //.append(close)
   $('<div class="metric"></div>').append($metric).appendTo('.visual');
 
   var svg = d3.select($metric[0]).append("svg")
@@ -354,130 +430,8 @@ function drawVisual(item){
     .attr("dy", ".35em")
     .attr("text-anchor", "middle")
     .text(sc ? sc.toFixed(1) + "%" : "-");
-/*
-  var close = $('<a class="btn btn-default close">x</a>').on('click', function(){
-    return (function(_item){
-      removeItem(_item);
-    })(item);
-  });
-
-  var title = (item.article && item.article.title) || item.tail;
-  $metricParent
-    .prepend('<a class="item" href="' + item.url + '" target="_blank">' + title + '</a>')
-    .children('.nav-tabs').append(close)
-
-  $('.collapser', $metricParent).on('click', function(){
-    $('.details', $(this).parents('.list-group-item')).collapse('toggle');
-  });
-
-  $('.nav-tabs a', $metricParent).click(function (e) {
-    e.preventDefault();
-    var ele = $(this);
-    var target = $('.' + ele.attr('data-target'), $metricParent);
-    ele.tab('show');
-
-    $('.tab-pane', $metricParent).removeClass('active');
-    target.addClass('active');
-  });
-*/
 }
 
-/*
-function draw(item){
-  // taken from http://bl.ocks.org/bbest/2de0e25d4840c68f2db1
-
-  var width = 300,
-    height = 300,
-    radius = Math.min(width, height) / 2,
-    innerRadius = 0.3 * radius;
-
-  var tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([0, 0])
-    .html(function(d) {
-      return d.data.label + ": <span style='color:orangered'>" + d.data.score + "</span>";
-    });
-
-  var pie = d3.layout.pie().sort(null).value(function(d) { return d.width; });
-
-  var arc = d3.svg.arc()
-    .innerRadius(innerRadius)
-    .outerRadius(function (d) {
-      return (radius - innerRadius) * (d.data.per / 100.0) + innerRadius;
-    });
-
-  var outlineArc = d3.svg.arc()
-          .innerRadius(innerRadius)
-          .outerRadius(radius);
-
-  var $metricParent = $(item.html).appendTo("#ctn");
-  sortMetrics($metricParent);
-  var $metric = $('.score', $metricParent);
-
-  var svg = d3.select($metric[0]).append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-  svg.call(tip);
-  createTextures(svg);
-
-  item.svg = svg;
-
-  var data = convertData(item);
-
-  var outerPath = svg.selectAll(".outlineArc")
-      .data(pie(data))
-      .enter().append("path")
-      .attr("fill", function(d) { return social_textures_out[d.data.id].url(); })
-      .attr("stroke", "#E6EBE6")
-      .attr("class", "outlineArc")
-      .attr("d", outlineArc);
-
-  var path = svg.selectAll(".solidArc")
-      .data(pie(data))
-      .enter().append("path")
-      .attr("fill", function(d) { return social_textures_in[d.data.id].url(); })
-      .attr("class", "solidArc")
-      .attr("d", arc)
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide);
-
-  var sc = item.counters.socialScore;
-
-  svg.append("svg:text")
-    .attr("class", "aster-score")
-    .attr("dy", ".35em")
-    .attr("text-anchor", "middle")
-    .text(sc ? sc.toFixed(1) + "%" : "-");
-
-  var close = $('<a class="btn btn-default close">x</a>').on('click', function(){
-    return (function(_item){
-      removeItem(_item);
-    })(item);
-  });
-
-  var title = (item.article && item.article.title) || item.tail;
-  $metricParent
-    .prepend('<a class="item" href="' + item.url + '" target="_blank">' + title + '</a>')
-    .children('.nav-tabs').append(close)
-
-  $('.collapser', $metricParent).on('click', function(){
-    $('.details', $(this).parents('.list-group-item')).collapse('toggle');
-  });
-
-  $('.nav-tabs a', $metricParent).click(function (e) {
-    e.preventDefault();
-    var ele = $(this);
-    var target = $('.' + ele.attr('data-target'), $metricParent);
-    ele.tab('show');
-
-    $('.tab-pane', $metricParent).removeClass('active');
-    target.addClass('active');
-  });
-}
-*/
 function convertData(item){
   var counters = item.counters,
     svg = item.svg,
@@ -573,7 +527,7 @@ Handlebars.registerHelper('parseValue', function(key, value) {
 Handlebars.registerHelper('getGA', function(key, counter) {
   var gad = (counter && counter.googleanalytics && counter.googleanalytics.details) || {};
   var val = gad['ga:' + key] || 0;
-  //return (parseFloat(val) && parseFloat(val).toFixed(1)) || val;
+
   if (!parseFloat(val) || key === 'bouncerate'){
     return (parseFloat(val) && parseFloat(val).toFixed(1)) || val;
   }
@@ -583,7 +537,6 @@ Handlebars.registerHelper('getGA', function(key, counter) {
 
 Handlebars.registerHelper('parseTime', function(value) {
   return parseTime(value);
-  //return value ? value.toFixed(1) + 's' : '';
 });
 
 Handlebars.registerHelper('sum', function(value1, value2) {

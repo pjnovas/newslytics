@@ -15,6 +15,17 @@ a {
   cursor: pointer;
 }
 
+.close {
+  font-size: 14px !important;
+  color: #F00 !important;
+  padding: 2px 5px !important;
+
+  &:hover {
+    color: #000 !important;
+    background-color: #F00 !important;
+  }
+}
+
 div.metric {
   margin: 10px;
   float: left;
@@ -53,9 +64,37 @@ div.metric {
 
   >thead>tr>th {
     text-align: center;
+    position: relative;
+    cursor: pointer;
 
     &:first-child{
       text-align: left;
+    }
+
+    &.sorting {
+      border-bottom: 4px solid rgb(1, 226, 0);
+
+      div {
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+
+      .asc {
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 5px 10px 5px;
+        border-color: transparent transparent rgb(1, 226, 0) transparent;
+      }
+
+      .desc {
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 10px 5px 0 5px;
+        border-color: rgb(1, 226, 0) transparent transparent transparent;
+      }
     }
   }
 

@@ -1,11 +1,11 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
 <nav class="navbar navbar-default navbar-fixed-top">
-  <div class="container">
+  <div class="container-fluid">
 
     <a class="navbar-brand" href="#">Newslytics</a>
 
-    <form class="navbar-form navbar-left collapse navbar-collapse" style="width: 50%;">
+    <form class="navbar-form navbar-left collapse navbar-collapse" style="width: 40%;">
       <div class="form-group" style="width: 80%;">
         <input id="url" type="text" class="form-control typeahead" placeholder="type or paste URL">
       </div>
@@ -14,8 +14,17 @@
       </div>
     </form>
 
+    <form class="navbar-form navbar-left collapse navbar-collapse">
+      <div class="form-group">
+        <input id="search-keywords" type="text" class="form-control" placeholder="enter search">
+      </div>
+      <div class="form-group">
+        <button id="search" type="button" class="btn btn-default" data-loading-text="Loading...">Search</button>
+      </div>
+    </form>
+
     <p class="navbar-text navbar-right post-count" style="margin-right:15px;">
-      <span>0</span> posts</p>
+      <span>0</span> posts (<a id="clear-posts">CLEAR</a>)</p>
 
     <ul class="nav navbar-nav navbar-right">
       <li>

@@ -14,6 +14,26 @@ $(function(){
     fetchAndRefresh();
   });
 
+  $('#url').on('keypress', function(e){
+    if(e.which === 13) {
+      fetchAndRefresh();
+      e.preventDefault();
+    }
+  });
+
+  function execSearch(){
+    var keywords = $('#search-keywords').val().trim();
+    searchRSS(keywords);
+  }
+
+  $('#search').on('click', execSearch);
+  $('#search-keywords').on('keypress', function(e){
+    if(e.which === 13) {
+      execSearch();
+      e.preventDefault();
+    }
+  });
+
   $('.navbar-nav a').click(function (e) {
     e.preventDefault();
     var ele = $(this);
@@ -74,23 +94,30 @@ $(function(){
     removeById(this.id);
   });
 
+  $('#clear-posts').on('click', function(e){
+    maxValue = 100;
+    all = [];
+    drawAll();
+    $('.post-count > span').text(0);
+  });
+
 });
 
 function blockState(){
-  $('#url').attr('disabled', true);
-  $('#send-url').button('loading');
+  $('#url, #search-keywords').attr('disabled', true);
+  $('#send-url, #search').button('loading');
 }
 
 function resetState(){
-  $('#send-url').button('reset');
-  $('#url').val("").attr('disabled', false);
+  $('#send-url, #search').button('reset');
+  $('#url, #search-keywords').val("").attr('disabled', false);
 }
 
 function fetchAndRefresh(url){
   url = url || $('#url').val();
 
   if (url.length === 0){
-    fetchRSS();
+    searchRSS();
     return;
   }
 
@@ -112,19 +139,20 @@ function fetchAndRefresh(url){
 
 }
 
-function fetchRSS(){
+function searchRSS(search){
   blockState();
+
 /*
   var search = $('#rss-query').val().trim();
   var year = $('#rss-date-year').val().trim();
   var month = $('#rss-date-month').val().trim();
   var day = $('#rss-date-day').val().trim();
-
+*/
   var query = '';
-  if (search.trim().length){
+  if (search && search.trim().length){
     query = '?s=' + search;
   }
-
+/*
   if (year){
     query += (query ? '&' : '?') + 'y=' + year;
   }
@@ -136,7 +164,7 @@ function fetchRSS(){
   }
 */
 
-  var query = '';
+  //var query = '';
   $.ajax({
     url: '/api/articles' + query,
     dataType: 'json',

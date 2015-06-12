@@ -22,7 +22,7 @@ module.exports = function(config){
     res.render('dash', { title: 'newslytics - Dashboard' });
   });
 
-  router.use('/api', require('./counter')(config));
+  router.use('/api', require('./articles')(config));
 
   return router;
 };

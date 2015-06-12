@@ -26,6 +26,7 @@ module.exports = function(config) {
 
   router.get('/articles', fetchRSS, map, cache, ga, social, send);
   router.get('/articles/*', parseURL, fetchRSS, map, cache, ga, social, sendOne);
+  router.get('/posts', setQuery, findArticles, send);
 
   return router;
 };
@@ -48,6 +49,29 @@ function parseURL(req, res, next){
 
   req.articleUrl = url;
   next();
+}
+
+function setQuery(req, res, next){
+  var query = req.query.q || "";
+
+  req.search_query = {};
+
+  var regex = new RegExp(query, 'i');
+  req.search_query.$or = [ { title: regex }, { url: regex }, { text: regex } ];
+
+  next();
+};
+
+function findArticles(req, res, next){
+
+  Article.find(req.search_query || {})
+    .limit(10)
+    .sort( { "created_at" : -1 } )
+    .exec(function(err, articles) {
+      if(err) return res.send(500);
+      req.articles = articles || [];
+      next();
+    });
 }
 
 function fetchRSS(req, res, next){

@@ -5,8 +5,9 @@ var all = [];
 var template;
 
 $(function(){
-  $('#send-url').on('click', fetchAndRefresh);
-  /*$('#get-rss').on('click', fetchRSS);*/
+  $('#send-url').on('click', function(){
+    fetchAndRefresh();
+  });
 
   $('.navbar-nav a').click(function (e) {
     e.preventDefault();
@@ -22,22 +23,40 @@ $(function(){
   $('.data-posts').on('click', '.collapser', function(){
     $('.details', $(this).parents('td')).collapse('toggle');
   });
+
+  $('#url').typeahead({
+    minLength: 1,
+    highlight: true,
+  }, {
+    name: 'articles',
+    displayKey: 'title',
+    source: function(query, syncResults, asyncResults){
+      $.ajax({
+        url: '/api/posts?q=' + query,
+        dataType: 'json'
+      }).done(function(articles){
+        asyncResults(articles);
+      });
+    }
+  })
+  .on("typeahead:selected", function(jqEle, article){
+    fetchAndRefresh(article.url);
+  });
+
 });
 
 function blockState(){
   $('#url').attr('disabled', true);
-  //$('#send-url, #get-rss').button('loading');
   $('#send-url').button('loading');
 }
 
 function resetState(){
   $('#send-url').button('reset');
-  //$('#send-url, #get-rss').button('reset');
   $('#url').val("").attr('disabled', false);
 }
 
-function fetchAndRefresh(){
-  var url = $('#url').val();
+function fetchAndRefresh(url){
+  url = url || $('#url').val();
 
   if (url.length === 0){
     fetchRSS();

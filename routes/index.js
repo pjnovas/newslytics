@@ -13,12 +13,12 @@ module.exports = function(config){
   router.get('/logout', logout);
 
   /* GET dashboard page. */
-  router.get('/dashboard', checkAuth, function(req, res, next) {
+  router.get('/dashboard.old', checkAuth, function(req, res, next) {
     res.render('dashboard', { title: 'newslytics - Dashboard' });
   });
 
   /* GET new dashboard page. */
-  router.get('/dash', checkAuth, function(req, res, next) {
+  router.get('/dashboard', checkAuth, function(req, res, next) {
     res.render('dash', { title: 'newslytics - Dashboard' });
   });
 

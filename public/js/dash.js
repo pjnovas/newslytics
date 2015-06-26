@@ -14,6 +14,14 @@ $(function(){
     fetchAndRefresh();
   });
 
+  $('#quick-search')
+    .on('click', function(e){
+      e.stopPropagation();
+    })
+    .on('keyup', function(){
+      filterTable();
+    });
+
   $('#url').on('keypress', function(e){
     if(e.which === 13) {
       fetchAndRefresh();
@@ -218,6 +226,8 @@ function setComments(article){
 }
 
 function createCounter(url, article){
+  if (all.some(function(item){ return (item.url === url); })) return; // already added
+
   var counters = article.counters;
   var parsed = url.split('/'),
     tail = parsed[parsed.length-1] || parsed[parsed.length-2];
@@ -239,6 +249,7 @@ function createCounter(url, article){
   updateMax(counters);
   sortAll();
   drawAll();
+
 }
 
 function updateMax(counter){
@@ -386,6 +397,15 @@ function draw(item){
   $(item.html).appendTo(".data-posts > tbody");
   $('.post-count > span').text(all.length);
   drawVisual(item);
+}
+
+function filterTable(){
+  var keywords = $('#quick-search').val();
+
+  $('tr', '.data-posts tbody')
+    .show()
+    .not(':icontains(' + keywords + ')')
+    .hide();
 }
 
 function drawVisual(item){
@@ -584,6 +604,12 @@ Handlebars.registerHelper('parseFloat', function(val) {
 });
 
 Handlebars.registerHelper('parseDate', function(value) {
-  //return value ? moment(value).format("DD/MM/YYYY hh:mm") : '';
-  return value ? moment(value).format("DD/MM/YYYY") : '';
+  return value ? moment(value).format("DD/MM/YYYY HH:mm") : '';
+});
+
+jQuery.expr[":"].icontains = jQuery.expr.createPseudo(function (arg) {
+  return function (elem) {
+    var query = (arg && arg.toUpperCase()) || "";
+    return jQuery(elem).text().toUpperCase().indexOf(query) >= 0;
+  };
 });

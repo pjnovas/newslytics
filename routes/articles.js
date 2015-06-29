@@ -25,6 +25,7 @@ module.exports = function(config) {
   }
 
   router.get('/articles', fetchRSS, map, cache, ga, social, send);
+  router.get('/articles/top', gaTop, fetchRSS, cache, send);
   router.get('/articles/*', parseURL, fetchRSS, map, cache, ga, social, sendOne);
   router.get('/posts', setQuery, findArticles, send);
 
@@ -68,7 +69,7 @@ function findArticles(req, res, next){
     .limit(10)
     .sort( { "created_at" : -1 } )
     .exec(function(err, articles) {
-      if(err) return res.send(500);
+      if(err) return res.res.sendStatus(500);
       req.articles = articles || [];
       next();
     });
@@ -106,6 +107,32 @@ function fetchRSS(req, res, next){
       next();
     });
 
+    return;
+  }
+
+  if (req.articles && req.articles.length) { // filled by GA
+
+    console.log('fetchRSS > ONE ARTICLE from Top GA.');
+    var fetchers = [];
+
+    req.articles.forEach(function(article){
+      fetchers.push(function(done){
+
+        console.log('fetchRSS > ONE ARTICLE ' + article.url);
+
+        rssFeed.get(article.url, function(err, obj){
+          if (err) return done(err);
+          article.comments = obj.items.length || 0;
+          done(null, article);
+        });
+
+      });
+    });
+
+    async.series(fetchers, function(err, articles){
+      req.articles = articles;
+      next();
+    });
     return;
   }
 
@@ -147,7 +174,7 @@ function map(req, res, next){
     var lnk = req.article.meta.link;
 
     req.article = {
-        url: lnk
+        url: lnk || req.article.url || req.articleUrl
       , tail: (lnk && nURL.parse(lnk).pathname) || ''
       , title: req.article.meta.title || ""
       , comments: req.article.items.length
@@ -177,7 +204,6 @@ function map(req, res, next){
 }
 
 function cache(req, res, next){
-  console.log('cache: ARTICLES > ');
 
   function onError(err){
     if (err) {
@@ -197,7 +223,7 @@ function cache(req, res, next){
         console.log('cache: NEW ARTICLE ');
 
         if (req.article && req.failedRSS){
-          res.send(404, 'RSS failed and the article was not cached');
+          res.status(404).send('RSS failed and the article was not cached');
           return;
         }
 
@@ -206,6 +232,7 @@ function cache(req, res, next){
         console.log('cache: Scrape ARTICLE ' + _article.url);
         scraper.scrape(_article.url, function(err, result){
           console.log('cache: Scraped ARTICLE ');
+
           if (err) {
             console.log(err);
           }
@@ -260,10 +287,19 @@ function cache(req, res, next){
     var stores = [];
 
     stores = req.articles.map(function(article){
-
       return function(cb){
+
+        var counters = article && article.counters || null;
+
         storeOne(article, function(newArticle){
-          cb(null, newArticle || article);
+          var art = newArticle || article;
+
+          if (counters){
+            art = (art.toJSON && art.toJSON()) || art;
+            art.counters = counters;
+          }
+
+          cb(null, art);
         });
       };
 
@@ -290,6 +326,15 @@ function ga(req, res, next){
   //TODO: get GA separated
 
   next();
+}
+
+function gaTop(req, res, next){
+  var max = req.query.max || 10;
+
+  counter.getTop(max, function(error, counters){
+    req.articles = counters;
+    next();
+  });
 }
 
 function social(req, res, next){

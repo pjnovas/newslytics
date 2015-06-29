@@ -14,6 +14,10 @@ $(function(){
     fetchAndRefresh();
   });
 
+  $('#top-ten').on('click', function(){
+    getTopTen();
+  });
+
   $('#quick-search')
     .on('click', function(e){
       e.stopPropagation();
@@ -113,11 +117,11 @@ $(function(){
 
 function blockState(){
   $('#url, #search-keywords').attr('disabled', true);
-  $('#send-url, #search').button('loading');
+  $('#send-url, #search, #top-ten').button('loading');
 }
 
 function resetState(){
-  $('#send-url, #search').button('reset');
+  $('#send-url, #search, #top-ten').button('reset');
   $('#url, #search-keywords').val("").attr('disabled', false);
 }
 
@@ -145,6 +149,28 @@ function fetchAndRefresh(url){
     resetState();
   });
 
+}
+
+function getTopTen(){
+  blockState();
+
+  $.ajax({
+    url: '/api/articles/top',
+    dataType: 'json',
+  })
+  .done(function(articles) {
+
+    articles.forEach(function(article){
+      setSums(article);
+      createCounter(article.url, article);
+    });
+
+    resetState();
+  })
+  .error(function(err,a,b){
+    console.log('ERROR on fetch > ' + err);
+    resetState();
+  });
 }
 
 function searchRSS(search){

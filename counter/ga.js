@@ -39,7 +39,7 @@ var gtoken = googleToken({
 
 var oauth2Client = new OAuth2();
 
-function getOptions(done){
+function getOptions(done, options){
 
   gtoken.getToken(function(err, token) {
     if (err) {
@@ -52,14 +52,23 @@ function getOptions(done){
       access_token: token
     });
 
+    var defatuls = {
+      startDate: config.startDate,
+      endDate: config.endDate,
+      dimensions: 'ga:pagePath',
+      sort: '-ga:pagePath'
+    };
+
+    options = options || {};
+
     done(null, {
       'auth': oauth2Client,
       'ids': 'ga:' + config.profileID,
-      'start-date': config.startDate,
-      'end-date': config.endDate,
-      'dimensions': 'ga:pagePath',
+      'start-date': options.startDate || defatuls.startDate,
+      'end-date': options.startDate || defatuls.endDate,
+      'dimensions': options.dimensions || defatuls.dimensions,
       'metrics': metrics.join(','),
-      'sort': '-ga:pagePath',
+      'sort': options.sort || defatuls.sort,
       //'max-results': 5
     });
 
@@ -89,6 +98,19 @@ function fetch(_url, done){
   });
 }
 
+function fetchTop(max, done){
+
+  getOptions(function(err, options){
+    if (err) return done(err);
+
+    options['max-results'] = (max + 5) || 10;
+    analytics.data.ga.get(options, done);
+
+  }, {
+    sort: '-ga:sessions'
+  });
+}
+
 function parse(body) {
   if (body.totalResults === 0){
     return { total: 0 };
@@ -99,32 +121,51 @@ function parse(body) {
     details: body.totalsForAllResults
   };
 
-/*
-  var header = body.columnHeaders;
-  var data = body.rows[0];
-
-  header.forEach(function(col, i){
-    if (col.name === 'ga:sessions'){
-      result.total = +data[i];
-    }
-
-    var value = data[i];
-
-    switch(col.dataType.toUpperCase()){
-      case 'INTEGER': value = +value; break;
-      case 'FLOAT':
-      case 'PERCENT': value = parseFloat(value); break;
-    }
-
-    result.details[col.name.replace('ga:','')] = value;
-  });
-*/
-
   return result;
+}
+
+function parseEach(body) {
+  if (body.totalResults === 0){
+    return { total: 0 };
+  }
+
+  var header = body.columnHeaders;
+  var urls = [];
+
+  body.rows.forEach(function(value){
+    var result = {
+      url: '',
+      total: 0,
+      details: {}
+    };
+
+    header.forEach(function(col, i){
+
+      if (col.name === 'ga:sessions'){
+        result.total = +value[i];
+      }
+
+      if (col.name === 'ga:pagePath'){
+        result.url = value[i];
+        return;
+      }
+
+      result.details[col.name] = value[i];
+    });
+
+    if (result.url === '/') return;
+    if (config.skip.some(function(part){ return result.url.indexOf(part) > -1; })) return;
+
+    urls.push(result);
+  });
+
+  return urls;
 }
 
 module.exports = {
   getData: fetch,
-  parse: parse
+  getTop: fetchTop,
+  parse: parse,
+  parseEach: parseEach
 };
 

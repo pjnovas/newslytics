@@ -2,6 +2,7 @@ var google = require('googleapis');
 var analytics = google.analytics('v3');
 var OAuth2 = google.auth.OAuth2;
 var googleToken = require('gtoken');
+var moment = require('moment');
 
 var path = require('path');
 var url = require('url');
@@ -32,10 +33,21 @@ var metrics = [
   , 'ga:bouncerate'
 ];
 
+var metricsOverall = [
+    'ga:sessions'
+  , 'ga:pageviews'
+  , 'ga:users'
+  , 'ga:bouncerate'
+];
+
 var gtoken = googleToken({
   keyFile: path.dirname(__dirname) + '/ga_key.json',
   scope: scopes
 });
+
+var getDate = function(date){
+  return moment(date).format('YYYY-MM-DD');
+}
 
 var oauth2Client = new OAuth2();
 
@@ -65,7 +77,7 @@ function getOptions(done, options){
       'auth': oauth2Client,
       'ids': 'ga:' + config.profileID,
       'start-date': options.startDate || defatuls.startDate,
-      'end-date': options.startDate || defatuls.endDate,
+      'end-date': options.endDate || defatuls.endDate,
       'dimensions': options.dimensions || defatuls.dimensions,
       'metrics': metrics.join(','),
       'sort': options.sort || defatuls.sort,
@@ -108,6 +120,71 @@ function fetchTop(max, done){
 
   }, {
     sort: '-ga:sessions'
+  });
+}
+
+function fetchTopByPeriod(opts, done){
+  var max = opts.max || 10;
+
+  getOptions(function(err, options){
+    if (err) return done(err);
+
+    options['start-date'] = getDate(opts.dateA.from);
+    options['end-date'] = getDate(opts.dateA.to);
+    options['max-results'] = (max + 5) || 10;
+
+    analytics.data.ga.get(options, function(error, countersA){
+      if (error) return done(error);
+
+      options['start-date'] = getDate(opts.dateB.from);
+      options['end-date'] = getDate(opts.dateB.to);
+
+      analytics.data.ga.get(options, function(error, countersB){
+        if (error) return done(error);
+
+        done(null, {
+          dateA: parseEach(countersA),
+          dateB: parseEach(countersB)
+        });
+
+      });
+    });
+
+  }, {
+    sort: '-ga:sessions'
+  });
+}
+
+function fetchTotalByPeriod(opts, done){
+
+  getOptions(function(err, options){
+    if (err) return done(err);
+
+    delete options.sort;
+    delete options.dimensions;
+
+    options.metrics = metricsOverall.join(',');
+
+    options['start-date'] = getDate(opts.dateA.from);
+    options['end-date'] = getDate(opts.dateA.to);
+
+    analytics.data.ga.get(options, function(error, countersA){
+      if (error) return done(error);
+
+      options['start-date'] = getDate(opts.dateB.from);
+      options['end-date'] = getDate(opts.dateB.to);
+
+      analytics.data.ga.get(options, function(error, countersB){
+        if (error) return done(error);
+
+        done(null, {
+          dateA: countersA.totalsForAllResults,
+          dateB: countersB.totalsForAllResults
+        });
+
+      });
+    });
+
   });
 }
 
@@ -165,6 +242,8 @@ function parseEach(body) {
 module.exports = {
   getData: fetch,
   getTop: fetchTop,
+  getTotalByPeriod: fetchTotalByPeriod,
+  getTopByPeriod: fetchTopByPeriod,
   parse: parse,
   parseEach: parseEach
 };

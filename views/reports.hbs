@@ -1,0 +1,75 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+
+    <a class="navbar-brand" href="#">Newslytics - Reports</a>
+
+    <ul class="nav navbar-nav navbar-right">
+      <li class="active">
+        <a data-target="weekly" role="tab" data-toggle="tab">Weekly</a>
+      </li>
+      <!--
+      <li>
+        <a data-target="data" role="tab" data-toggle="tab">Data</a>
+      </li>
+      -->
+    </ul>
+
+  </div>
+</nav>
+
+<div class="container-fluid">
+
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane weekly active"></div>
+    <div role="tabpanel" class="tab-pane data"></div>
+  </div>
+
+</div>
+
+<script id="weekly-template" type="text/x-handlebars-template">
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="col-md-12">
+        \{{getGA "sessions" totals.dateB}} / \{{getGA "sessions" totals.dateA}}
+        Sesiones
+      </div>
+      <div class="col-md-12">
+        \{{getGA "users" totals.dateB}} / \{{getGA "users" totals.dateA}}
+        Usuarios
+      </div>
+      <div class="col-md-12">
+        \{{getGA "pageviews" totals.dateB}} / \{{getGA "pageviews" totals.dateA}}
+        N° de páginas vistas
+      </div>
+      <div class="col-md-12">
+        \{{getGA "bouncerate" totals.dateB}} / \{{getGA "bouncerate" totals.dateA}}
+        % de rebote
+      </div>
+    </div>
+
+    <div class="col-md-8">
+
+      <ol>
+      \{{#each articles}}
+        <li>
+          <div><a href="\{{url}}" target='_blank'>\{{title}}</a></div>
+          <div>\{{ga.dateB}} / \{{ga.dateA}}</div>
+        </li>
+      \{{/each}}
+      </ol>
+
+    </div>
+  </div>
+
+</script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<script src="/js/handlebars-v3.0.3.js"></script>
+<script src="/js/moment.min.js"></script>
+
+<script src="/js/reports.js"></script>

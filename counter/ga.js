@@ -87,7 +87,7 @@ function getOptions(done, options){
   });
 }
 
-function fetch(_url, done){
+function fetch(opts, done){
   var exp = 'ga:pagePath=~^*';
   var maxLen = 128 - exp.length;
 
@@ -117,6 +117,52 @@ function fetchTop(max, done){
 
     options['max-results'] = (max + 5) || 10;
     analytics.data.ga.get(options, done);
+
+  }, {
+    sort: '-ga:sessions'
+  });
+}
+
+function fetchByPeriod(opts, done){
+  var _url = opts.url;
+  var exp = 'ga:pagePath=~^*';
+  var maxLen = 128 - exp.length;
+
+  getOptions(function(err, options){
+    if (err) return done(err);
+
+    if (_url){
+      var urlPath = url.parse(_url).path;
+
+      // GA: Regular expression must be less than or equal to 128 characters.
+      if (urlPath.length > maxLen){
+        urlPath = urlPath.substr(-maxLen);
+      }
+
+      options.filters = exp + urlPath;
+    }
+
+    options['start-date'] = getDate(opts.dateA.from);
+    options['end-date'] = getDate(opts.dateA.to);
+
+    analytics.data.ga.get(options, function(error, countersA){
+      if (error) return done(error);
+
+      options['start-date'] = getDate(opts.dateB.from);
+      options['end-date'] = getDate(opts.dateB.to);
+
+      analytics.data.ga.get(options, function(error, countersB){
+        if (error) return done(error);
+
+        done(null, {
+          url: _url,
+          dateA: countersA.totalsForAllResults['ga:sessions'] || 0,
+          dateB: countersB.totalsForAllResults['ga:sessions'] || 0
+        });
+
+      });
+
+    });
 
   }, {
     sort: '-ga:sessions'
@@ -241,6 +287,7 @@ function parseEach(body) {
 
 module.exports = {
   getData: fetch,
+  getDataByPeriod: fetchByPeriod,
   getTop: fetchTop,
   getTotalByPeriod: fetchTotalByPeriod,
   getTopByPeriod: fetchTopByPeriod,

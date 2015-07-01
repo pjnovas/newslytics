@@ -2,7 +2,8 @@
 var moment = require('moment')
   , ga = require('../counter/ga')
   , express = require('express')
-  , mongoose = require('mongoose');
+  , mongoose = require('mongoose')
+  , async = require('async');
 
 var Article = mongoose.model('Article');
 
@@ -62,6 +63,48 @@ function gaTotalWeekly(req, res, next){
 
 function gaTopTenWeekly(req, res, next){
 
+  ga.getTop(15, function(err, data){
+    if (err) return console.dir(err);
+    var gaData = ga.parseEach(data);
+
+    var fetchers = [];
+
+    gaData.forEach(function(data){
+
+      fetchers.push( (function(_url){
+
+        return function(cb){
+
+          ga.getDataByPeriod({
+            url: _url,
+            dateA: req.dates.a,
+            dateB: req.dates.b
+          }, cb);
+
+        };
+
+      })(data.url) );
+
+    });
+
+    async.parallel(fetchers, function(err, articles){
+      if (err) {
+        console.dir(err);
+        req.articles = [];
+        return next();
+      }
+
+      console.dir(articles);
+      req.articles = articles
+      next();
+    });
+
+  });
+}
+
+/*
+function gaTopTenWeekly(req, res, next){
+
   ga.getTopByPeriod({
     dateA: req.dates.a,
     dateB: req.dates.b,
@@ -102,8 +145,13 @@ function gaTopTenWeekly(req, res, next){
     next();
   });
 }
+*/
 
 function setArticles(req, res, next){
+
+  if (!req.articles || !req.articles.length){
+    return next();
+  }
 
   var urls = req.articles.map(function(article){
     return article.url;

@@ -7,8 +7,7 @@
  * 1. Create a Project
  * 2. APIs & Auth > APIs > Analytics API > Enable API
  * 3. APIs & Auth > Credentials > OAuth > Create new Client ID > Service Account
- * 4. Download THIS .json file
- * 5. Paste it here and name it ga_key.json
+ * 4. Rename this json file into ga_key.json and remove this comments
  */
 
 sample:

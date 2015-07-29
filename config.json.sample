@@ -10,6 +10,7 @@
  * 6. Set it in your config.json
  * 7. Set the range date to use on each query
  *  same definition of GA: https://developers.google.com/analytics/devguides/reporting/core/v3/reference#startDate
+ * 8. set the user login "auth" with your credentials
  */
 
 {

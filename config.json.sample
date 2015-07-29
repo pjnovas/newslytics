@@ -17,7 +17,12 @@
   "googlaAnalytics": {
     "profileID": "XXXXXX",
     "startDate": "2012-05-01",
-    "endDate": "today"
+    "endDate": "today",
+    "skip": [
+      "some/url/to/skip",
+      "last_news.html",
+      "index.php"
+    ]
   },
   "auth": {
     "user": "admin",
@@ -34,6 +39,11 @@
   "scraper": {
     "title-selector": ".post-title",
     "content-selector": ".post-inner .entry",
-    "words-per-minute": 270
+    "words-per-minute": 270,
+    "fetch-timeout": 5000
+  },
+  "db": {
+    "host": "localhost",
+    "name": "newslytics"
   }
 }

@@ -4,27 +4,15 @@ var express = require('express');
 module.exports = function(config){
   var router = express.Router();
 
-  /* GET home page. */
   router.get('/', function(req, res, next) {
-    res.render('index', { title: 'newslytics' });
+    res.render('index', { title: 'Newslytic' });
   });
 
   router.get('/login', login);
   router.get('/logout', logout);
 
-  /* GET dashboard page. */
-  router.get('/dashboard.old', checkAuth, function(req, res, next) {
-    res.render('dashboard', { title: 'newslytics - Dashboard' });
-  });
-
-  /* GET new dashboard page. */
   router.get('/dashboard', checkAuth, function(req, res, next) {
-    res.render('dash', { title: 'newslytics - Dashboard' });
-  });
-
-  /* GET reports page. */
-  router.get('/reports', checkAuth, function(req, res, next) {
-    res.render('reports', { title: 'newslytics - Reports' });
+    res.render('dash', { title: 'Dashboard - Newslytic' });
   });
 
   router.use('/api', require('./articles')(config));
@@ -43,7 +31,7 @@ function checkAuth(req, res, next){
 
 function login(req, res) {
   if (req.isAuthenticated()){
-    return res.redirect('/');
+    return res.redirect('/dashboard');
   }
 
   res.render('login');

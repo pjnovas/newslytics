@@ -30,10 +30,6 @@ img.grayscale {
     -webkit-filter: grayscale(100%); /* Chrome 19+, Safari 6+, Safari 6+ iOS */
 }
 
-.icon-bar {
-   background-color:#fff;
-}
-
 .scroll-down a, .scroll-top a {
    color:#ffffff;
 }
@@ -44,20 +40,29 @@ img.grayscale {
   bottom:0%;
   right:0%;
   border-radius: 4px 0 0 0;
-}
 
-.scroll-down {
-   color:#f9f9f9;
-}
-
-.scroll-top {
-  background-color:#dbdbdb;
+  color:#f9f9f9;
+  background-color:#352E3E;
 }
 
 .scroll-down:hover a,
 .scroll-top:hover a {
   color: #352E3E;
   background-color: #D2D2D2;
+}
+
+.scroll-top {
+
+  @media(max-width: 500px){
+
+    a {
+      padding: 15px 5px!important;
+
+      .fa-3x {
+        font-size: 2em;
+      }
+    }
+  }
 }
 
 .vert {
@@ -104,6 +109,10 @@ img.grayscale {
   color:#fff;
   margin-bottom:30px;
   text-transform:uppercase;
+
+  @media(max-width: 500px){
+    font-size: 50px;
+  }
 }
 
 .header .lead {
@@ -147,8 +156,14 @@ img.grayscale {
 }
 
 .blurb {
-  padding: 120px 0;
+  padding: 80px 0;
   background-color:#fefefe;
+
+  @media(max-width: 500px){
+    h1.why-icons {
+      font-size: 40px;
+    }
+  }
 }
 
 .blurb .panel {
@@ -158,6 +173,10 @@ img.grayscale {
 .bright {
   background: #dbdbdb;
   color:#777;
+
+  .panel {
+    box-shadow: none;
+  }
 }
 
 .featurette {
@@ -211,6 +230,22 @@ img.grayscale {
   margin: 10px;
 }
 
+.panel-default {
+  .panel-heading {
+    padding: 15px 10px;
+    h2 {
+      margin: 0;
+    }
+  }
+}
+
 footer {
-  padding: 100px 0;
+  padding: 25px 0 15px 0;
+  background-color: #352E3E;
+  color: #fff;
+}
+
+a.navbar-brand {
+  font-size: 22px;
+  padding: 20px;
 }

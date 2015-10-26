@@ -1,24 +1,21 @@
 
-<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
-
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="/css/landing.css">
 
 <div class="navbar navbar-fixed-top alt" data-spy="affix" data-offset-top="1000">
-  <div class="container">
+  <div class="container-fluid">
     <div class="navbar-header">
-      <a href="#" class="navbar-brand">Newslytic</a>
+      <a href="#" class="navbar-brand">Newslytic.com</a>
       <a class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
+        <span class="fa fa-bars fa-2x"></span>
       </a>
     </div>
     <div class="navbar-collapse collapse" id="navbar">
       <ul class="nav navbar-nav pull-right">
-        <li><a href="#sec1">Why?</a></li>
-        <li><a href="#sec2">Features</a></li>
+        <li><a href="#why">Why</a></li>
+        <li><a href="#features">Features</a></li>
         <li><a href="#sec3">Screenshots</a></li>
-        <li><a href="#sec4">Contact us</a></li>
+        <li><a href="#contact">Get Started</a></li>
       </ul>
     </div>
    </div>
@@ -26,27 +23,27 @@
 
 <div class="header alt vert">
   <div class="text-vcenter">
-    <h1>Newslytic</h1>
-    <p class="lead">Some text jnjnead jbaskjd eh asknd</p>
+    <h1>Newslytic.com</h1>
+    <p class="lead">Tracking news performance to improve the social impact of quality journalism</p>
   </div>
 </div>
 
-<div id="sec1" class="blurb">
-  <div class="container">
+<div id="why" class="blurb">
+  <div class="container-fluid">
     <div class="row">
       <div class="col-md-7">
-        <h1>Why Newslytic?</h1>
-        <p class="lead">bla bla lbalsdaosmd aksdklas nd</p>
+        <h1>Why Newslytic.com</h1>
+        <p class="lead">We're tracking social share and convertion rate at article level to understand the impact of news. We understand that each piece of content is an investment that needs to be measured.</p>
       </div>
       <div class="col-md-5">
-        <h1 class="pull-right"><i class="icon-mobile-phone icon-3x"></i> <i class="icon-tablet icon-3x"></i> <i class="icon-laptop icon-3x"></i></h1>
+        <h1 class="why-icons pull-right"><i class="fa fa-newspaper-o fa-2x"></i> <i class="fa fa-line-chart fa-2x"></i> <i class="fa fa-users fa-2x"></i></h1>
       </div>
     </div>
   </div>
 </div>
 
-<div class="featurette" id="sec2">
-  <div class="container">
+<div class="featurette" id="features">
+  <div class="container-fluid">
     <div class="row">
       <div class="col-md-12 text-center">
         <h1>Features</h1>
@@ -55,23 +52,23 @@
     <div class="row">
       <div class="col-md-4 text-center">
         <div class="featurette-item">
-          <i class="icon-rocket"></i>
-          <h4>Rocket</h4>
-          <p>bla bla bla akndajsn diudn aiwdnasdn asnd.</p>
+          <i class="fa fa-sign-in"></i>
+          <h4>Track</h4>
+          <p>We grab diferent metric sources.</p>
         </div>
       </div>
       <div class="col-md-4 text-center">
         <div class="featurette-item">
-          <i class="icon-magnet"></i>
-          <h4>Magnet</h4>
-          <p>bla bla bla akndajsn diudn aiwdnasdn asnd.</p>
+          <i class="fa fa-line-chart"></i>
+          <h4>Relate</h4>
+          <p>We define performance indicators to track.</p>
         </div>
       </div>
       <div class="col-md-4 text-center">
         <div class="featurette-item">
-          <i class="icon-shield"></i>
-          <h4>Shield</h4>
-          <p>bla bla bla akndajsn diudn aiwdnasdn asnd.</p>
+          <i class="fa fa-users"></i>
+          <h4>Viralize</h4>
+          <p>We tell you where to focus your energy.</p>
         </div>
       </div>
     </div>
@@ -90,52 +87,84 @@
   </div>
 </div>
 
-<div class="blurb bright" id="sec4">
+<div class="blurb bright" id="contact">
 
   <div class="row">
     <div class="col-md-6 col-md-offset-3 text-center">
-      <h3>Contact us</h3>
+      <h3>Get Started</h3>
       <br>
     </div>
   </div>
 
-    <div class="row">
-      <div class="col-sm-4 col-sm-offset-4">
-        <form class="form-horizontal">
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Your Name">
+  <div class="row">
+
+    <div class="col-sm-3 col-sm-offset-3">
+      <div class="panel panel-default">
+        <div class="panel-heading text-center">
+          <h2>My Dashboard</h2>
+        </div>
+        <div class="row">&nbsp;</div>
+        <div class="row">
+          <div class="col-sm-10 col-sm-offset-1">
+            <form class="form-horizontal" action="/login" method="post">
+              <div class="form-group">
+                <input type="text" name="username" class="form-control" placeholder="Username">
+              </div>
+              <div class="form-group">
+                <input type="password" name="password" class="form-control" placeholder="Password">
+              </div>
+              <div class="col-sm-10 col-sm-offset-1">
+                <button type="submit" class="btn btn-lg btn-primary btn-block">Log In</button>
+              </div>
+            </form>
           </div>
-          <div class="form-group">
-            <input type="email" class="form-control" placeholder="e-mail">
-          </div>
-          <div class="col-sm-4 pull-right">
-            <button type="submit" class="btn btn-lg btn-primary btn-block">Send</button>
-          </div>
-        </form>
+        </div>
+      </div>
     </div>
-    </div>
+
+    <div class="col-sm-3">
+      <div class="panel panel-default">
+        <div class="panel-heading text-center">
+          <h2>Want beta access?</h2>
+        </div>
+        <div class="row">&nbsp;</div>
+        <div class="row">
+          <div class="col-sm-10 col-sm-offset-1">
+            <form class="form-horizontal">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Your Name">
+              </div>
+              <div class="form-group">
+                <input type="email" class="form-control" placeholder="Email">
+              </div>
+              <div class="col-sm-10 col-sm-offset-1">
+                <button type="submit" class="btn btn-lg btn-primary btn-block">Sign up</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+ 	  </div>
+
   </div>
+
 </div>
 
 <footer>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
       <div class="col-md-6 col-md-offset-3 text-center">
-        <ul class="list-inline">
-          <li><a href="https://twitter.com/HacksLabsData" target="_blank"><i class="icon-twitter icon-2x"></i> Follow Us</a></li>
-        </ul>
-        <hr>
-        <p>Built with <i class="icon-heart-empty"></i> at <a href="http://hackslabs.org/">Hackslabs</a>.</p>
+        <p>Built with <i class="fa fa-heart-o"></i> at <a href="http://hackslabs.org/">Hackslabs</a> &amp; <a href="http://mediafactory.vc">Media Factory</a>.</p>
       </div>
     </div>
   </div>
 </footer>
 
 <ul class="nav pull-right scroll-down">
-  <li><a href="#" title="Scroll down"><i class="icon-chevron-down icon-3x"></i></a></li>
+  <li><a href="#" title="Scroll down"><i class="fa fa-chevron-down fa-3x"></i></a></li>
 </ul>
 <ul class="nav pull-right scroll-top">
-  <li><a href="#" title="Scroll to top"><i class="icon-chevron-up icon-3x"></i></a></li>
+  <li><a href="#" title="Scroll to top"><i class="fa fa-chevron-up fa-3x"></i></a></li>
 </ul>
 
 <script>

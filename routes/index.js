@@ -15,6 +15,8 @@ module.exports = function(config){
     res.render('dash', { title: 'Dashboard - Newslytic' });
   });
 
+  router.use('/suscribe', require('./suscribe')(config));
+
   router.use('/api', require('./articles')(config));
   router.use('/api', require('./reports')(config));
 

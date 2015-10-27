@@ -45,5 +45,19 @@
   "db": {
     "host": "localhost",
     "name": "newslytics"
+  },
+  "email": {
+    "enabled": false,
+    "transport": {
+      "service": "Mailgun",
+      "auth": {
+        "api_key": "key-YYYYYY",
+        "domain": "sandboxXXXXX.mailgun.org"
+      }
+    },
+    "suscribers": {
+      "sendTo": "your_email_to_get_the_suscriptors@gmail.com",
+      "sendAs": "suscribers@newslytic.com"
+    }
   }
 }

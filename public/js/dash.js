@@ -15,7 +15,7 @@ $(function(){
   });
 
   $('#top-ten').on('click', function(){
-    getTopTen();
+    fetchAndRefresh();
   });
 
   $('#quick-search')

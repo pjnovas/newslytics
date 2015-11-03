@@ -1,0 +1,57 @@
+<table class="table table-striped data-posts">
+  <thead>
+    <tr>
+      <th data-sort="title">Title
+        <input id="quick-search" type="text" style="max-width: 150px; display: inline-block; float: right; margin-right: 10px;" class="form-control input-sm" placeholder="search keyword">
+      </th>
+      <th data-sort="published_at">Publish</th>
+      <th data-sort="counters.googleanalytics.total">Visits</th>
+      <th data-sort="counters.facebook.total" style="width: 130px;">Facebook</th>
+      <th data-sort="counters.twitter.total">Twitter</th>
+      <th data-sort="counters.socialScore" style="width: 80px;">Social %</th>
+      <th data-sort="counters.googleanalytics.details.ga:sessionDuration" style="width: 200px;">Duration</th>
+      <th data-sort="totalComments" style="width: 140px;">Comments</th>
+      <th data-sort="counters.googleanalytics.details.ga:bouncerate" style="width: 90px;">Bounce %</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <a href="\{{url}}" target="_blank">\{{title}}</a>
+        <a id="\{{_id}}" class="btn btn-default close">x</a>
+      </td>
+      <td>\{{parseDate published_at}}</td>
+      <td>\{{counters.googleanalytics.total}}</td>
+      <td><a class="collapser">\{{counters.facebook.total}}</a>
+        <ul class="collapse details">
+         \{{#each counters.facebook.details}}
+          <li>\{{fancyName @key}}
+            <span class="badge">\{{parseValue @key this}}</span>
+          </li>
+          \{{/each}}
+        </ul>
+      </td>
+      <td>\{{counters.twitter.total}}</td>
+      <td>\{{parseFloat counters.socialScore}}</td>
+      <td><a class="collapser">\{{getGA "sessionDuration" counters}}</a>
+        <ul class="collapse details">
+          <li>SessionTime avg <span class="badge">\{{getGA "avgSessionDuration" counters}}</span>
+          </li>
+          <li>ReadTime avg <span class="badge">\{{parseTime readtime}}</span>
+          </li>
+          <li>Words <span class="badge">\{{countWords text}}</span>
+          </li>
+        </ul>
+      </td>
+      <td><a class="collapser">\{{totalComments}}</a>
+        <ul class="collapse details">
+          <li>Facebook <span class="badge">\{{counters.facebook.details.comments}}</span>
+          </li>
+          <li>Wordpress <span class="badge">\{{comments}}</span>
+          </li>
+        </ul>
+      </td>
+      <td>\{{getGA "bouncerate" counters}}</td>
+    </tr>
+  </tbody>
+</table>

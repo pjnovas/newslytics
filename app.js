@@ -48,6 +48,8 @@ app.use(passport.session());
 require('./models')();
 require('./auth')(app, config);
 
+require('./reports');
+
 var routes = require('./routes')(config);
 app.use('/', routes);
 

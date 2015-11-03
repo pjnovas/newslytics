@@ -17,7 +17,7 @@ module.exports = function(config){
 
   router.use('/suscribe', require('./suscribe')(config));
 
-  router.use('/api', require('./articles')(config));
+  router.use('/api', require('./articles').init(config));
   router.use('/api', require('./reports')(config));
 
   return router;

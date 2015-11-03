@@ -14,7 +14,7 @@ var counter = require('../counter');
 var rssFeed = require('../rssfeed');
 var scraper = require('../scraper');
 
-module.exports = function(config) {
+module.exports.init = function(config) {
   rssFeed.configure(config.rss);
   scraper.configure(config.scraper);
 
@@ -30,6 +30,39 @@ module.exports = function(config) {
   router.get('/posts', setQuery, findArticles, send);
 
   return router;
+};
+
+module.exports.getDaily = function(done){
+
+  // Get Feed
+  rssFeed.getFeed(function(err, result){
+    if (err) return done(err);
+
+    var articles = result.items;
+
+    if (articles && articles.length){
+      // Map Articles
+      articles = articles.map(mapArticlesRSS);
+
+      setCacheArticles(articles, function(err, articles){
+        if (err) return done(err);
+
+        var toFill = articles.map(function(article){
+          return article.toJSON();
+        });
+
+        counter.getAll(toFill, function(error, filled){
+          if (err) return done(err);
+          done(null, filled);
+        });
+
+      });
+
+      return;
+    }
+
+    done(null, []);
+  });
 };
 
 function isAuth(req, res, next){
@@ -80,6 +113,7 @@ function fetchRSS(req, res, next){
 
   function throwError(err){
     if (err) {
+      console.dir(err);
       console.log(err, err.stack);
       res.status(500).send(err);
       return true;
@@ -184,23 +218,23 @@ function map(req, res, next){
     return next();
   }
 
-  function map(obj){
-    return {
-        url: obj.link
-      , tail: (obj.link && nURL.parse(obj.link).pathname) || ''
-      , title: obj.title || ""
-      , published_at: obj.pubDate
-      , comments: +((obj['slash:comments'] && obj['slash:comments']['#']) || 0)
-      , text: ""
-      , fetched_at: new Date()
-    };
-  }
-
   if (req.articles && req.articles.length){
-    req.articles = req.articles.map(map);
+    req.articles = req.articles.map(mapArticlesRSS);
   }
 
   next();
+}
+
+function mapArticlesRSS(obj){
+  return {
+      url: obj.link
+    , tail: (obj.link && nURL.parse(obj.link).pathname) || ''
+    , title: obj.title || ""
+    , published_at: obj.pubDate
+    , comments: +((obj['slash:comments'] && obj['slash:comments']['#']) || 0)
+    , text: ""
+    , fetched_at: new Date()
+  };
 }
 
 function cache(req, res, next){
@@ -212,70 +246,17 @@ function cache(req, res, next){
     }
   }
 
-  function storeOne(_article, done){
-    // Updates cache for one article (creates one if no exist)
-
-    Article.findOne({ url: _article.url }, function(err, article){
-      if (onError(err)) return done();
-
-      if (!article){
-        // article not cached, create one
-        console.log('cache: NEW ARTICLE ');
-
-        if (req.article && req.failedRSS){
-          res.status(404).send('RSS failed and the article was not cached');
-          return;
-        }
-
-        var article = new Article(_article);
-
-        console.log('cache: Scrape ARTICLE ' + _article.url);
-        scraper.scrape(_article.url, function(err, result){
-          console.log('cache: Scraped ARTICLE ');
-
-          if (err) {
-            console.log(err);
-          }
-          else if (result) {
-            article.title = result.title || article.title;
-            article.text = result.text;
-            article.readtime = result.readtime;
-          }
-
-          console.log('cache: Scraped ARTICLE result ');
-          console.dir(result);
-
-          article.save(function(err, article){
-            if (onError(err)) return done();
-            done(article);
-          });
-
-        });
-
-        return;
-      }
-
-      if (req.failedRSS){
-        // failed RSS don't update
-        return done(article);
-      }
-
-      // article cached > update it
-      article.comments = _article.comments || article.comments;
-      article.fetched_at = _article.fetched_at || new Date();
-
-      article.save(function(err, article){
-        if (onError(err)) return done();
-        done(article);
-      });
-
-    });
-  }
-
   if (req.article){
     // only one article fetch
     console.log('cache: only one article fetch ');
-    return storeOne(req.article, function(article){
+
+    if (req.failedRSS){
+      res.status(404).send('RSS failed for the article');
+      return;
+    }
+
+    return storeOne(req.article, function(err, article){
+      if (err) return next();
       console.log('cache: STORED ');
       req.article = article || req.article;
       next();
@@ -284,28 +265,7 @@ function cache(req, res, next){
 
   if (req.articles && req.articles.length){
     // multiple articles fetch
-    var stores = [];
-
-    stores = req.articles.map(function(article){
-      return function(cb){
-
-        var counters = article && article.counters || null;
-
-        storeOne(article, function(newArticle){
-          var art = newArticle || article;
-
-          if (counters){
-            art = (art.toJSON && art.toJSON()) || art;
-            art.counters = counters;
-          }
-
-          cb(null, art);
-        });
-      };
-
-    });
-
-    async.series(stores, function(err, articles){
+    setCacheArticles(req.articles, function(err, articles){
       if (onError(err)) return next();
       req.articles = articles;
       next();
@@ -315,6 +275,95 @@ function cache(req, res, next){
   }
 
   next();
+}
+
+function setCacheArticles(articles, done){
+  var stores = [];
+
+  stores = articles.map(function(article){
+    return function(cb){
+
+      var counters = article && article.counters || null;
+
+      storeOne(article, function(err, newArticle){
+        if (err) return cb(err);
+
+        var art = newArticle || article;
+
+        if (counters){
+          art = (art.toJSON && art.toJSON()) || art;
+          art.counters = counters;
+        }
+
+        cb(null, art);
+      });
+    };
+
+  });
+
+  async.series(stores, done);
+}
+
+function storeOne(_article, done){
+  // Updates cache for one article (creates one if no exist)
+
+  function onError(err){
+    if (err) {
+      console.log(err, err.stack);
+      return true;
+    }
+  }
+
+  Article.findOne({ url: _article.url }, function(err, article){
+    if (onError(err)) return done(err);
+
+    if (!article){
+      // article not cached, create one
+      console.log('cache: NEW ARTICLE ');
+
+      var article = new Article(_article);
+
+      console.log('cache: Scrape ARTICLE ' + _article.url);
+      scraper.scrape(_article.url, function(err, result){
+        console.log('cache: Scraped ARTICLE ');
+
+        if (err) {
+          console.log(err);
+        }
+        else if (result) {
+          article.title = result.title || article.title;
+          article.text = result.text;
+          article.readtime = result.readtime;
+        }
+
+        console.log('cache: Scraped ARTICLE result ');
+        console.dir(result);
+
+        article.save(function(err, article){
+          if (onError(err)) return done(err);
+          done(null, article);
+        });
+
+      });
+
+      return;
+    }
+
+    //if (req.failedRSS){
+    //  // failed RSS don't update
+    //  return done(null, article);
+    //}
+
+    // article cached > update it
+    article.comments = _article.comments || article.comments;
+    article.fetched_at = _article.fetched_at || new Date();
+
+    article.save(function(err, article){
+      if (onError(err)) return done(err);
+      done(null, article);
+    });
+
+  });
 }
 
 function ga(req, res, next){

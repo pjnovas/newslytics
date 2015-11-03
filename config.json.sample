@@ -58,6 +58,24 @@
     "suscribers": {
       "sendTo": "your_email_to_get_the_suscriptors@gmail.com",
       "sendAs": "suscribers@newslytic.com"
+    },
+    "reports": {
+      "daily": {
+        "sendTo": ["email1_to_get_report@gmail.com", "email2_to_get_report@gmail.com"],
+        "sendAs": "daily.report@newslytic.com"
+      }
+    }
+  },
+  "reports": {
+    "enabled": true,
+    "db": {
+      "host": "localhost",
+      "name": "social_counter_reports"
+    },
+    "daily": {
+      "enabled": true,
+      "job": { "priority": "high", "concurrency": 10 }, // for more options: https://github.com/rschmukler/agenda/blob/d630d7c5607936248173c19d5c89a205ea5563d0/README.md
+      "every": "00 30 9 * * 1-5" // ie Mon to Fri at 9:30. for CRON format: https://github.com/ncb000gt/node-cron
     }
   }
 }
